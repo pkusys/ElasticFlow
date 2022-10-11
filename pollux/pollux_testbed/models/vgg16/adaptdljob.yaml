@@ -1,0 +1,40 @@
+apiVersion: adaptdl.petuum.com/v1
+kind: AdaptDLJob
+metadata:
+  generateName: vgg16-
+spec:
+  template:
+    spec:
+      containers:
+      - name: main
+        command:
+        - python3
+        - /root/vgg16/main.py
+        env:
+        - name: PYTHONUNBUFFERED
+          value: "true"
+        securityContext:
+          capabilities:
+            add: [ "IPC_LOCK" ]
+        resources:
+          limits:
+            nvidia.com/gpu: 1
+            cpu: 10
+            memory: "80G"
+            rdma/hca: 1
+          requests:
+            nvidia.com/gpu: 1
+            cpu: 10
+            memory: "80G"
+            rdma/hca: 1
+        volumeMounts:
+        - name: data
+          mountPath: /mnt
+          readOnly: false
+      volumes:
+      - name: data
+        hostPath:
+          path: /mnt
+          type: Directory
+      imagePullSecrets:
+      - name: regcred
