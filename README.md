@@ -2,7 +2,7 @@
 
 We provide the artifact for the ASPLOS 2023 paper "ElasticFlow: An Elastic Serverless Training Platform for Distributed Deep Learning", including:
 
-- The main implementation of \sysname.
+- The main implementation of ElasticFlow.
 - Testbed experiment scripts (Sec 6.2 \& 6.6).
 - Cluster simulator (Sec 6.3 \& 6.4 \& 6.5).
 
