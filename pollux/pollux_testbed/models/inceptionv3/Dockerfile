@@ -3,15 +3,15 @@ WORKDIR /root
 
 COPY adaptdl/requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
-COPY benchmark/models/inceptionv3/requirements.txt requirements.txt
+COPY pollux_testbed/models/inceptionv3/requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY adaptdl adaptdl
 ENV PYTHONPATH=/root/adaptdl:$PYTHONPATH
 
-COPY benchmark/models/inceptionv3 inceptionv3
+COPY pollux_testbed/models/inceptionv3 inceptionv3
 
-COPY benchmark/topo.xml topo.xml
+COPY pollux_testbed/topo.xml topo.xml
 ENV PYTHONPATH=/root/inceptionv3:$PYTHONPATH
 ENV NCCL_IB_PCI_RELAXED_ORDERING=1
 ENV NCCL_SOCKET_IFNAME=eth0

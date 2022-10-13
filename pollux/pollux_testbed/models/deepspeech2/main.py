@@ -346,9 +346,9 @@ def wer(reference, hypothesis, ignore_case=False, delimiter=' '):
     wer = float(edit_distance) / ref_len
     return wer
 
-print('==> Preparing data..') # todo
+print('==> Preparing data..') 
 train_url="train-clean-100"
-trainset = torchaudio.datasets.LIBRISPEECH("/mnt/", url=train_url, download=True)
+trainset = torchaudio.datasets.LIBRISPEECH("/mnt/data1/", url=train_url, download=True)
 train_audio_transforms = nn.Sequential(
             torchaudio.transforms.MelSpectrogram(sample_rate=16000, n_mels=128),
             torchaudio.transforms.FrequencyMasking(freq_mask_param=30),
@@ -383,13 +383,9 @@ net = SpeechRecognitionModel(
 
 
 net = net.to(device)
-#if device == 'cuda':
-#    cudnn.benchmark = True
 
-#criterion = nn.CrossEntropyLoss()
 criterion = nn.CTCLoss(blank=28)
 optimizer = optim.AdamW(net.parameters(), hparams['learning_rate'])
-#lr_scheduler = ExponentialLR(optimizer, 0.0133 ** (1.0 / args.epochs))
 print("will build nccl group")
 adaptdl.torch.init_process_group("nccl")
 print("nccl group build")
@@ -416,15 +412,12 @@ def train(epoch):
     global target_samples, samples, sample_file, metric_achieved
     print('\nEpoch: %d' % epoch)
     net.train()
-    #stats = adaptdl.torch.Accumulator()
     total = 0
     print(len(trainloader), "iters per epoch")
     wers = []
     for batch in trainloader:
         spectrograms, labels, input_lengths, label_lengths = batch
         spectrograms, labels = spectrograms.to(device), labels.to(device)
-        #print(len(inputs))
-        #inputs, targets = inputs.to(device), targets.to(device)
         optimizer.zero_grad()
         outputs = net(spectrograms)
         outputs = F.log_softmax(outputs, dim=2)
@@ -434,63 +427,28 @@ def train(epoch):
         loss.backward()
         optimizer.step()
 
-        #stats["loss_sum"] += loss.item()
-
-
         _, predicted = outputs.max(1)
-        #stats["total"] += labels.size(0)
         samples += int(labels.size(0)) * torch.distributed.get_world_size()
         total += 1
-        #stats["correct"] += predicted.eq(targets).sum().item()
         decoded_preds, decoded_targets = GreedyDecoder(outputs.transpose(0, 1), labels, label_lengths)
         for j in range(len(decoded_preds)):
             wers.append(wer(decoded_targets[j], decoded_preds[j]))
 
-        #trainloader.to_tensorboard(writer, epoch, tag_prefix="AdaptDL/Data")
-        #net.to_tensorboard(writer, epoch, tag_prefix="AdaptDL/Model")
         if torch.distributed.get_rank() == 0:
             #remove file
             if os.path.exists(sample_file):
                 os.system("rm " + sample_file)
             with open(sample_file, 'a') as f:
                 f.write(str(samples) + "\n")
-        # write file
-        # get checkpoint path. write file from start. 
         print(samples, "samples")
         if samples >= target_samples:
             print("reach target!")
             break
 
-    """with stats.synchronized():
-        stats["loss_avg"] = stats["loss_sum"] / total
-        stats["avg_wer"] = sum(wers)/len(wers)
-        #stats["accuracy"] = stats["correct"] / stats["total"]
-        writer.add_scalar("Loss/Train", stats["loss_avg"], epoch)
-        #writer.add_scalar("Accuracy/Train", stats["accuracy"], epoch)
-        report_train_metrics(epoch, stats["loss_avg"], wer=stats["avg_wer"])
-        print("Train:", stats)"""
-    """if torch.distributed.get_rank() == 0:
-        if stats._state.results["avg_wer"] <= 0.25:
-            metric_achieved = True
-            #remove file
-            if os.path.exists(sample_file):
-                os.system("rm " + sample_file)
-            with open(sample_file, 'a') as f:
-                f.write(str(target_samples) + "\n")"""
-
-
 
 with SummaryWriter(os.getenv("ADAPTDL_TENSORBOARD_LOGDIR", "/tmp")) as writer:
     for epoch in adaptdl.torch.remaining_epochs_until(epochs):
         train(epoch)
-        """if not metric_achieved:
-            if os.path.exists(sample_file):
-                with open(sample_file, 'r') as f:
-                    for line in f:
-                        samples = int(line.split('\n')[0])
-                        break"""
         metric_achieved =  (samples >= target_samples)
         if metric_achieved:
             break
-        #valid(epoch)
-        #lr_scheduler.step()

@@ -8,9 +8,9 @@ RUN pip install torchaudio --extra-index-url https://download.pytorch.org/whl/cu
 COPY adaptdl adaptdl
 ENV PYTHONPATH=/root/adaptdl:$PYTHONPATH
 
-COPY benchmark/models/deepspeech2 deepspeech2
+COPY pollux_testbed/models/deepspeech2 deepspeech2
 
-COPY benchmark/topo.xml topo.xml
+COPY pollux_testbed/topo.xml topo.xml
 ENV PYTHONPATH=/root/deepspeech2:$PYTHONPATH
 ENV NCCL_IB_PCI_RELAXED_ORDERING=1
 ENV NCCL_SOCKET_IFNAME=eth0

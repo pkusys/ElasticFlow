@@ -118,10 +118,10 @@ if __name__ == "__main__":
         })"""
         env = job["spec"]["template"]["spec"]["containers"][0].setdefault("env", [])
         #env.append({"name": "ADAPTDL_CHECKPOINT_PATH", "value": "/pollux/checkpoint"})
-        env.append({"name": "ADAPTDL_CHECKPOINT_PATH", "value": "/mnt/checkpoint/" + row.name})
+        env.append({"name": "ADAPTDL_CHECKPOINT_PATH", "value": "/mnt/data1/" + row.name})
         #env.append({"name": "NCCL_DEBUG", "value": "INFO"})
-        if not os.path.exists("/mnt/checkpoint/" + row.name):
-            os.system("mkdir /mnt/checkpoint/" + row.name)
+        if not os.path.exists("/mnt/data1/" + row.name):
+            os.system("mkdir /mnt/data1/" + row.name)
         #env.append({"name": "ADAPTDL_TENSORBOARD_LOGDIR", "value": "/pollux/tensorboard"})
         env.append({"name": "ADAPTDL_TENSORBOARD_LOGDIR", "value": "/mnt/tensorboard/" + row.name})
         if not os.path.exists("/mnt/tensorboard/" + row.name):

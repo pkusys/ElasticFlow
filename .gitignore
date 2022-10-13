@@ -1,7 +1,7 @@
 *.pyc
 *.pth
 **/.DS_Store
-workloads/GPT2/aclImdb/
+elastic-training-executor/GPT2/aclImdb/
 **/*checkpoint/
 .vscode
 *.sh

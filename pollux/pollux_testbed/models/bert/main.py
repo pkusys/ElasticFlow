@@ -32,14 +32,13 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 # Data
 print('==> Preparing data..')
-data = torch.load("/mnt/bert/data.pth")
+data = torch.load("/mnt/data1/bert/data.pth")
 input_ids = data["input_ids"]
 attention_masks = data["attention_masks"]
 labels = data["labels"]
 
 # create dataset
 trainset = TensorDataset(input_ids, attention_masks, labels)
-#trainset = Dataset(trainset)
 
 trainloader = adaptdl.torch.AdaptiveDataLoader(trainset, batch_size=args.bs, shuffle=True, num_workers=2, drop_last=True)
 trainloader.autoscale_batch_size(256, local_bsz_bounds=(1, 256),
@@ -47,33 +46,22 @@ trainloader.autoscale_batch_size(256, local_bsz_bounds=(1, 256),
 
 # Model
 print('==> Building model..')
-model = BertForSequenceClassification.from_pretrained(
+"""model = BertForSequenceClassification.from_pretrained(
     "bert-large-uncased", # Use the 12-layer BERT model, with an uncased vocab.
     num_labels = 2, # The number of output labels--2 for binary classification.
                     # You can increase this for multi-class tasks.   
     output_attentions = False, # Whether the model returns attentions weights.
     output_hidden_states = False, # Whether the model returns all hidden-states.
-) # todo: load from pretrained
-#model = BertForSequenceClassification.from_pretrained("/mnt/checkpoint/bert")
+) """
+model = BertForSequenceClassification.from_pretrained("/mnt/data1/bert")
 model = model.to(device)
 
-#if device == 'cuda':
-#    cudnn.benchmark = True
-
-#criterion = nn.CrossEntropyLoss()
-#optimizer = optim.SGD([{"params": [param]} for param in net.parameters()],
 optimizer = AdamW(model.parameters(),
                         lr = 2e-5, # default is 5e-5, our notebook had 2e-5
                         eps = 1e-8 # default is 1e-8.
                         )
-#lr_scheduler = get_linear_schedule_with_warmup(optimizer, 
-#    num_warmup_steps = 0, # Default value in run_glue.py
-#    #num_training_steps = self.iterations
-#    )
-
 
 adaptdl.torch.init_process_group("nccl")
-#model = adaptdl.torch.AdaptiveDataParallel(model, optimizer, lr_scheduler)
 model = adaptdl.torch.AdaptiveDataParallel(model, optimizer)
 model.zero_grad()
 samples = 0
@@ -98,7 +86,6 @@ def train(epoch):
     start_time = time.time()
     print('\nEpoch: %d' % epoch)
     model.train()
-    #stats = adaptdl.torch.Accumulator()
     for batch in trainloader:
         b_input_ids = batch[0].to(device)
         b_input_mask = batch[1].to(device)
@@ -114,10 +101,6 @@ def train(epoch):
         loss.backward()
         optimizer.step()
 
-        #stats["loss_sum"] += loss.item() * b_labels.size(0)
-        #stats["correct"] +=  torch.eq(logits.argmax(axis=1).flatten(), targets).sum().item()
-        #_, predicted = outputs.max(1)
-        #stats["total"] += targets.size(0)
         samples += int(targets.size(0)) * torch.distributed.get_world_size()
         if torch.distributed.get_rank() == 0:
             #remove file
@@ -125,7 +108,6 @@ def train(epoch):
                 os.system("rm " + sample_file)
             with open(sample_file, 'a') as f:
                 f.write(str(samples) + "\n")
-        #stats["correct"] += predicted.eq(batch['labels']).sum().item()
 
         trainloader.to_tensorboard(writer, epoch, tag_prefix="AdaptDL/Data")
         model.to_tensorboard(writer, epoch, tag_prefix="AdaptDL/Model")
@@ -133,45 +115,10 @@ def train(epoch):
         if samples >= target_samples:
             break
 
-    """with stats.synchronized():
-        stats["loss_avg"] = stats["loss_sum"] / stats["total"]
-        stats["accuracy"] = stats["correct"] / stats["total"]
-        writer.add_scalar("Loss/Train", stats["loss_avg"], epoch)
-        writer.add_scalar("Accuracy/Train", stats["accuracy"], epoch)
-        report_train_metrics(epoch, stats["loss_avg"], accuracy=stats["accuracy"])
-        print("Train:", stats)"""
-    #model.module.save_pretrained("/mnt/checkpoint/bert")
-    #print("tpt: ", len(trainloader) / (time.time() - start_time))
-
-    #if stats._state.results["accuracy"] > 0.99:
-    #    metric_achieved = True
-    """if torch.distributed.get_rank() == 0:
-        if stats._state.results["accuracy"] >= 0.99:
-            metric_achieved = True
-            #remove file
-            if os.path.exists(sample_file):
-                os.system("rm " + sample_file)
-            with open(sample_file, 'a') as f:
-                f.write(str(target_samples) + "\n")"""
-
-#bs=64: 14epoch
 with SummaryWriter(os.getenv("ADAPTDL_TENSORBOARD_LOGDIR", "/tmp")) as writer:
     for epoch in adaptdl.torch.remaining_epochs_until(epochs):
         train(epoch)
-        #if metric_achieved:
-        #    break
-        #torch.save(model.module.state_dict(), "/mnt/checkpoint/test")
-        #break
-        #model.module.save_pretrained("/mnt/checkpoint/bert/")
-        #break
-        #valid(epoch)
-        #lr_scheduler.step()
-        """if not metric_achieved:
-            if os.path.exists(sample_file):
-                with open(sample_file, 'r') as f:
-                    for line in f:
-                        samples = int(line.split('\n')[0])
-                        break"""
+        
         metric_achieved =  (samples >= target_samples)
         if metric_achieved:
             break

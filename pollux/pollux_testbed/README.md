@@ -10,14 +10,84 @@ The key files are:
 
 ## Getting Started
 1. Hardware requirements
-The testbed experiments requires 4 Azure Standard_ND96asr_A100 nodes, each with 8 A100 GPUs, 96 CPU cores, 900 GB RAM, and eight NVIDIA Mellanox HDR InfiniBand HCAs.
-xxx G storage on the `/mnt` directory and xxx nvme is required for dataset storage.
-Running the testbed experiment of Pollux takes about one day.
-2. Dataset
-xxx container image:
+The testbed experiments requires at least four Azure Standard_ND96asr_A100 nodes, each with 8 A100 GPUs, 96 CPU cores, 900 GB RAM, and eight NVIDIA Mellanox HDR InfiniBand HCAs. 
+NVMe is required for dataset and DL model checkpoint storage to speed up the I/O process. 
+At least 160G NVMe storage is needed on each node for the dataset and model checkpoints.
 
-The datasets are included in the `/mnt/data`/ directory.
+Running the testbed experiment of Pollux takes about one day, and more time is needed for environment preparation.
+
+2. Dataset
+The datasets include:
+ - ImageNet
+ - CoLA
+ - aclImdb
+ - LibriSpeech
+
+The model configuration files include `merges.txt` and `vocab.json` for GPT2 model.
+
+You can download the datasets following the official guide of each dataset.
+You can also download a smaller dataset (including the model configuration files) from [this link](https://drive.google.com/file/d/1gxFg842sYH6JNqCkKtYf7DfkFAunkh_n/view?usp=sharing). 
+The datasets need to be placed in the `/mnt/data1/` directory.
+The `/mnt/data1/` directory should be like:
+```
+/mnt/
+| - data1/
+|	| - imagenet/
+|	| - LibriSpeech/
+|	| - aclImdb/
+|	| - bert/
+|	| - gpt2/
+```
+
+NFS is needed by Pollux according to the [public Pollux benchmark](https://github.com/petuum/adaptdl/tree/osdi21-artifact/benchmark).
+You need to add this line to `/etc/exports` on the master node:
+```Bash
+/mnt/data1 *(rw,sync,no_subtree_check,no_root_squash)
+```
+Then, the other configurations needed by NFS will be automatically cnfigured by the scripts in the following steps.
 
 3. Kubernetes configuration
+Configuring Kubernets requires the disk usgae of the `/` directory is under 80%. You make check the disk usage with the `df -h` command. 
 
-## Reproducing the simulation result in Figure 6(a)
+First, you need to log in docker on each node:
+```Bash
+$ docker login -u <docker_username> -p <docker_password>
+```
+Modify `/etc/docker/daemon.json` to set up `nvidia-container-runtime` according to [this guide](https://github.com/NVIDIA/k8s-device-plugin#quick-start). 
+
+Remember to restart docker service:
+```Bash
+$ systemctl restart docker
+```
+
+Then, you need to install a certain version of k8s to run Pollux. On all of the nodes, run:
+```Bash
+$ bash scripts/install_k8s.sh
+```
+Then, install the pollux scheduler and config the cluster.
+On the master node, run:
+```Bash
+$ bash scripts/master_node.sh
+```
+
+On the other worker nodes, run:
+```Bash
+$ bash scripts/worker_node.sh <master_ip>
+```
+If you only have four nodes, you need to remove the scheduler taint from the master node so that you can use the GPUs in Pollux. Run `kubectl describe node <master_node_name>` to get the taint information and run `kubectl taint nodes --all <taint>-` to remove the taints. 
+
+## Reproducing the Testbed result in Figure 6(a)
+To run all jobs, run on the master node:
+```Bash
+$ python run_workload.py pollux pollux_testbed_trace.csv --repository=<your_docker_username>/pollux
+```
+
+To get the scheduling results, run:
+```Bash
+$ python run_monitor.py pollux_result.json
+```
+
+To parse the results and get the final deadline satisfactory ration, run:
+```Bash
+$ python parse_result.py --input pollux_result.json  --trace ../ElasticFlow/traces/itp_day1.csv
+```

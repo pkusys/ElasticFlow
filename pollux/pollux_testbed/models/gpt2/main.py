@@ -178,14 +178,14 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 # Data
 print('==> Preparing data..')
 #tokenizer = GPT2Tokenizer.from_pretrained(pretrained_model_name_or_path='gpt2')
-tokenizer = GPT2Tokenizer(vocab_file='/mnt/checkpoint/gpt2/vocab.json', merges_file='/mnt/checkpoint/gpt2/merges.txt')
+tokenizer = GPT2Tokenizer(vocab_file='/mnt/data1/gpt2/vocab.json', merges_file='/mnt/data1/gpt2/merges.txt')
 # todo: use fixed tokenizer
 tokenizer.padding_side = "left"
 tokenizer.pad_token = tokenizer.eos_token
 gpt2_classificaiton_collator = Gpt2ClassificationCollator(use_tokenizer=tokenizer, 
                                                                 labels_encoder={'neg': 0, 'pos': 1}, 
                                                                 max_sequence_len=64)
-trainset = MovieReviewsDataset(path="/mnt/aclImdb/train",
+trainset = MovieReviewsDataset(path="/mnt/data1/aclImdb/train",
                                     use_tokenizer=tokenizer)
 
 
@@ -196,12 +196,12 @@ trainloader.autoscale_batch_size(256, local_bsz_bounds=(1, 256),
 # Model
 print('==> Building model..')
 
-model_config = GPT2Config.from_pretrained(pretrained_model_name_or_path='/mnt/checkpoint/gpt2/', num_labels=2)
+model_config = GPT2Config.from_pretrained(pretrained_model_name_or_path='/mnt/data1/gpt2/', num_labels=2)
 # if the model exist, load from checkpoint
 if os.path.exists(os.getenv("ADAPTDL_CHECKPOINT_PATH", "/tmp")+"/pytorch_model.bin"):
     model = GPT2ForSequenceClassification.from_pretrained(pretrained_model_name_or_path=os.getenv("ADAPTDL_CHECKPOINT_PATH", "/tmp"), config=model_config)
 else:
-    model = GPT2ForSequenceClassification.from_pretrained(pretrained_model_name_or_path='/mnt/checkpoint/gpt2/', config=model_config)
+    model = GPT2ForSequenceClassification.from_pretrained(pretrained_model_name_or_path='/mnt/data1/gpt2/', config=model_config)
 # resize model embedding to match new tokenizer
 model.resize_token_embeddings(len(tokenizer))
 # fix model padding token id
