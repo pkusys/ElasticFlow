@@ -3,7 +3,7 @@
 ## Contents
 - `ElasticFlow/` contains code for simulation and is adapted from Tiresias.
 	- `elastic-training-executor/` contains testbed training code for testbed experiments. It is not needed in simulation experiments.
-	- `scheduler/` contains
+	- `scheduler/` contains the implementation of ElasticFlow scheduling algorithm and some baseline algorithms.
 		- `cluster_spec/` contains configuration files for cluster, e.g., the number of nodes, the number of GPU per node.
 		- `runtime/` contains the gRPC source code for communication between the scheduler, master, worker, and trainer. 
 
