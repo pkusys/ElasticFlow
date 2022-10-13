@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+import "common.proto";
+
+service SchedulerToMaster {
+    // Send scheduling results to master
+    rpc Schedule (ScheduleRequest) returns (ScheduleResponse) {};
+    // send broadcast finish message to workers
+    rpc BroadcastFinish (Empty) returns (Empty) {};
+    // send train begin message to workers
+    rpc TrainingBegin (Empty) returns (Empty) {};
+}
+
+message ScheduleRequest {
+    string command = 1;
+}
+
+message ScheduleResponse {
+    bool success = 1;
+    string error_message = 2;
+}

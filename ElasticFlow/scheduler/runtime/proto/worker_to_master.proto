@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+import "common.proto";
+
+service WorkerToMaster {
+    // Register the worker with the master
+    rpc RegisterWorker (RegisterWorkerRequest) returns (RegisterWorkerResponse) {};
+    // Indicates to the master that a job has completed
+    rpc Done (DoneRequest) returns (Empty) {};
+}
+
+message RegisterWorkerRequest {
+    string ip_addr = 1;
+    uint32 port = 2;
+    uint32 num_gpus = 3;
+}
+
+message RegisterWorkerResponse {
+    bool success = 1;
+    uint32 worker_id = 2;
+    string error_message = 3;
+}
+
+message DoneRequest {
+    uint32 worker_id = 1;
+    uint32 job_id = 2;
+}

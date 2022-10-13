@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+import "common.proto";
+
+service WorkerToTrainer {
+    // init a new process group on trainer
+    rpc NewGroup (InitNewGroupRequest) returns (Empty) {};
+    // broadcast finish message
+    rpc BroadcastFinish (Empty) returns (Empty) {};
+    // train begin message
+    rpc TrainingBegin (Empty) returns (Empty) {};
+    // initialize a job on trainer (possibly start training)
+    rpc InitStandby (InitStandbyRequest) returns (Empty) {};
+    // kill the active workload job on trainer
+    rpc KillActive (KillActiveRequest) returns (Empty) {};
+    // kill the trainer
+    rpc KillTrainer(KillTrainerRequest) returns (Empty) {};
+    // probe the trainer server
+    rpc ProbeTrainer(Empty) returns (Empty) {};
+    
+}
+
+message InitNewGroupRequest {
+    bool for_ddp = 1;
+    uint32 job_id = 2;
+    repeated uint32 ranks = 3;
+    uint32 src = 4;
+}
+
+message InitStandbyRequest {
+    uint32 job_id = 1;
+    string job_name = 2; 
+    string master_addr = 3;
+    uint32 master_port = 4; 
+    uint32 rank = 5; 
+    uint32 local_rank = 6;  
+    uint32 world_size = 7; 
+    uint32 batch_size = 8; 
+    uint32 iterations = 9; 
+    bool from_scratch = 10;
+}
+
+message SendOrReceiveRequest {
+    uint32 job_id = 1;
+    uint32 global_rank = 2;
+    bool src = 3;
+}
+
+message KillActiveRequest {
+    uint32 job_id = 1;
+}
+
+message KillTrainerRequest {}
+
