@@ -1,0 +1,6 @@
+cvxpy
+transformers
+pandas
+grpcio
+grpcio-tools
+psutil

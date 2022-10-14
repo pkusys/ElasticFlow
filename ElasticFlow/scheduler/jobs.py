@@ -456,7 +456,8 @@ class _TFJobs(object):
         self.running_jobs.append(job)
         if job not in self.runnable_jobs:
             self.runnable_jobs.append(job)
-        self.num_accepted_job += 1 # not considering the jobs that temporarily stops
+        if 'best_effort' not in job or int(job['best_effort']) != 1:
+            self.num_accepted_job += 1 # not considering the jobs that temporarily stops
 
     def move_to_pending(self, job):
         job['status'] = 'PENDING'

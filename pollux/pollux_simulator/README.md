@@ -42,3 +42,7 @@ Average JCT: 71114.34871794871
 DDL satisfactory ratio: 0.5025641025641026
 ```
 The simulation takes about a day.
+
+## Plotting figures
+Please refer to `<repo>/plot_figure/.README.md`
+

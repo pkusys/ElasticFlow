@@ -4,7 +4,6 @@
 elastic-training-executor/GPT2/aclImdb/
 **/*checkpoint/
 .vscode
-*.sh
 *.gz
 **/data
 # Byte-compiled / optimized / DLL files

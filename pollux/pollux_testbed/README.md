@@ -1,4 +1,7 @@
 # Pollux Testbed Experiments
+
+Note: Due to the execution scripts of testbed experiments are highly related to intracompany platform, we only demonstrate the functionality and provide the reproduction steps on the hardware devices we use. Please adjust to your platform if you would like to execute the testbed experiment.
+
 This directory contains the code used for the testbed experiments 
 of Pollux baseline in Figure6(a) of the paper. The code is adapted from
 [Pollux (OSDI'21) artifact](https://github.com/petuum/adaptdl/tree/osdi21-artifact).
@@ -16,6 +19,13 @@ At least 160G NVMe storage is needed on each node for the dataset and model chec
 
 Running the testbed experiment of Pollux takes about one day, and more time is needed for environment preparation.
 
+NFS is needed by Pollux according to the [public Pollux benchmark](https://github.com/petuum/adaptdl/tree/osdi21-artifact/benchmark).
+You need to add this line to `/etc/exports` on the master node:
+```Bash
+/mnt/data1 *(rw,sync,no_subtree_check,no_root_squash)
+```
+Then, the other configurations needed by NFS will be automatically cnfigured by the scripts in the following steps.
+
 2. Dataset
 The datasets include:
  - ImageNet
@@ -26,7 +36,7 @@ The datasets include:
 The model configuration files include `merges.txt` and `vocab.json` for GPT2 model.
 
 You can download the datasets following the official guide of each dataset.
-You can also download a smaller dataset (including the model configuration files) from [this link](https://drive.google.com/file/d/1gxFg842sYH6JNqCkKtYf7DfkFAunkh_n/view?usp=sharing). 
+We have packed a smaller dataset (including the model configuration files) and you can download it from [this link](https://drive.google.com/file/d/1gxFg842sYH6JNqCkKtYf7DfkFAunkh_n/view?usp=sharing). 
 The datasets need to be placed in the `/mnt/data1/` directory.
 The `/mnt/data1/` directory should be like:
 ```
@@ -38,13 +48,7 @@ The `/mnt/data1/` directory should be like:
 |	| - bert/
 |	| - gpt2/
 ```
-
-NFS is needed by Pollux according to the [public Pollux benchmark](https://github.com/petuum/adaptdl/tree/osdi21-artifact/benchmark).
-You need to add this line to `/etc/exports` on the master node:
-```Bash
-/mnt/data1 *(rw,sync,no_subtree_check,no_root_squash)
-```
-Then, the other configurations needed by NFS will be automatically cnfigured by the scripts in the following steps.
+If there is data corruption, please download the datasets from the official website.
 
 3. Kubernetes configuration
 Configuring Kubernets requires the disk usgae of the `/` directory is under 80%. You make check the disk usage with the `df -h` command. 

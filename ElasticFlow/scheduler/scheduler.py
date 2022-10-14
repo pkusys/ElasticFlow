@@ -93,6 +93,8 @@ flags.DEFINE_boolean('early_stop', False,
                 '''Whether to stop a job if a target metric is reached''')
 flags.DEFINE_string('gpu_type', 'A100', 
                 '''The GPU to run on. It should match the trace provided.''')
+flags.DEFINE_boolean('plot_figure', True, 
+                '''Whether to write log files and plot figures afterwards''')
 
 
 FLAGS = flags.FLAGS
@@ -817,10 +819,10 @@ def edf_sim_allocation(job_dict, start_time, simulation=True, future_free_gpus=N
                 job_dict['new_end_time'] = estimated_end_time
                 job_dict['new_allocations'] = utils.merge_dict(new_allocations)
                     
-                print("event time:", event_time, "allocation:", job_dict['new_allocations'], "job",job_dict['job_id'], "end time", job_dict['new_end_time'])
-                print("future_free_gpus", new_future_free_gpus)
+                #print("event time:", event_time, "allocation:", job_dict['new_allocations'], "job",job_dict['job_id'], "end time", job_dict['new_end_time'])
+                #print("future_free_gpus", new_future_free_gpus)
                 if estimated_end_time > job_dict['ddl']:
-                    print("ERROR: Fail to meet deadline requirements!")
+                    #print("ERROR: Fail to meet deadline requirements!")
                     return_value = False
                 return return_value
             else:
@@ -873,8 +875,8 @@ def edf_sim_allocation(job_dict, start_time, simulation=True, future_free_gpus=N
                 job_dict['new_end_time'] = estimated_end_time
                 job_dict['new_allocations'] = utils.merge_dict(new_allocations)
                     
-                print("event time:", event_time, "allocation:", job_dict['new_allocations'], "job",job_dict['job_id'], "end time", job_dict['new_end_time'])
-                print("future_free_gpus", new_future_free_gpus)
+                #print("event time:", event_time, "allocation:", job_dict['new_allocations'], "job",job_dict['job_id'], "end time", job_dict['new_end_time'])
+                #print("future_free_gpus", new_future_free_gpus)
                 if estimated_end_time > job_dict['ddl']:
                     #print("ERROR: Fail to meet deadline requirements!")
                     return_value = False
@@ -915,8 +917,8 @@ def edf_sim_allocation(job_dict, start_time, simulation=True, future_free_gpus=N
     job_dict['new_allocations'] = utils.merge_dict(new_allocations)
         
 
-    print("event time:", event_time, "allocation:", job_dict['new_allocations'], "job",job_dict['job_id'],"end time", job_dict['new_end_time'])
-    print("future_free_gpus", new_future_free_gpus)
+    #print("event time:", event_time, "allocation:", job_dict['new_allocations'], "job",job_dict['job_id'],"end time", job_dict['new_end_time'])
+    #print("future_free_gpus", new_future_free_gpus)
     return return_value
 
 
@@ -1113,7 +1115,8 @@ def gandiva_sim_jobs(gputime=False, solve_starvation=0):
                 else:
                     s_job['start_time'] = cur_time
                     JOBS.running_jobs.append(s_job)
-                    JOBS.num_accepted_job += 1
+                    if 'best_effort' not in s_job or int(s_job['best_effort']) != 1:
+                        JOBS.num_accepted_job += 1
                     utils.print_fn('----job[%d] starts' % s_job['job_idx'])
 
             #remove time_event
@@ -1141,8 +1144,8 @@ def gandiva_sim_jobs(gputime=False, solve_starvation=0):
                         each_job['node_set'] = each_set
                     else:
                         each_job['node_set'] = None
-        if event != None or new_job_start:
-            LOG.scheduling_result(event_time)
+        #if event != None or new_job_start:
+        LOG.scheduling_result(event_time)
 
         # change from 10 to time_slot
         if len(JOBS.job_events) <= 0:
@@ -2340,7 +2343,8 @@ def themis_sim_jobs():
                     #JOBS.num_accepted_job -= 1
                 else:
                     print("ends at", cur_time, e_job['end_time'], "ddl", e_job['ddl'])
-                    JOBS.num_accepted_job += 1
+                    if 'best_effort' not in e_job or int(e_job['best_effort']) != 1:
+                        JOBS.num_accepted_job += 1
                 JOBS.remove_running(e_job)
                 LOG.job_complete(e_job, e_job['end_time'])
 
@@ -2788,7 +2792,8 @@ def dlas_sim_jobs(gputime=False, solve_starvation=0):
                     JOBS.move_to_declined(e_job)
                     #input()
                 else:
-                    JOBS.num_accepted_job += 1
+                    if 'best_effort' not in e_job or int(e_job['best_effort']) != 1:
+                        JOBS.num_accepted_job += 1
                     print("ends at", event_time, e_job['end_time'], "ddl", e_job['ddl'])
                 CLUSTER.release_job_res(e_job)
                 LOG.job_complete(e_job, e_job['end_time'])
@@ -3188,6 +3193,9 @@ def main():
         one_queue_fifo_sim_jobs()
     print("accepted jobs:", JOBS.num_accepted_job)
     print("declined jobs:", JOBS.num_declined_job)
+    # record time ratio, cluster size, trace_file, schedule, placement
+    LOG.log_final_result(JOBS.num_accepted_job, JOBS.num_declined_job)
+
 
 if __name__ == '__main__':
     # print('Hello world %d' % 2)

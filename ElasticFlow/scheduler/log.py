@@ -5,11 +5,13 @@ from __future__ import print_function
 import subprocess
 import csv
 import math
+import time
 
 import utils
 import flags 
 import cluster 
 import jobs
+import os
 
 FLAGS = flags.FLAGS
 CLUSTER = cluster.CLUSTER
@@ -514,6 +516,23 @@ class _Log(object):
         fd.close()
         #print("log:", row)
         return
+
+    def log_final_result(self, accepted_jobs, declined_jobs):
+        # record time, ratio, cluster size, trace_file, schedule, placement
+        if os.path.exists(self.log_path + '/final_result.csv'):
+            fd = open(self.log_path + '/final_result.csv', 'a+')
+            log_writer = csv.writer(fd)  
+            log_writer.writerow([time.strftime("%Y%m%d-%H-%M-%S", time.localtime()), 
+                str(float(accepted_jobs)/(accepted_jobs+declined_jobs)), 
+                FLAGS.cluster_spec, FLAGS.trace_file, FLAGS.schedule, FLAGS.scheme])
+        else:
+            fd = open(self.log_path + '/final_result.csv', 'w+')
+            log_writer = csv.writer(fd)  
+            log_writer.writerow(['time', 'ddl_satis_ratio', 'cluster_spec', 'trace_file', 'scheduler', 'scheme'])
+            log_writer.writerow([time.strftime("%Y%m%d-%H-%M-%S", time.localtime()), 
+                str(float(accepted_jobs)/(accepted_jobs+declined_jobs)), 
+                FLAGS.cluster_spec, FLAGS.trace_file, FLAGS.schedule, FLAGS.scheme])
+        fd.close()
 
 
 LOG = _Log()
