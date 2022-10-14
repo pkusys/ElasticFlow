@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+import "common.proto";
+
+service TrainerToScheduler {
+    // Report to scheduler that the job is training stable
+    rpc ReportStable (ReportStableRequest) returns (Empty) {};
+    // Report to scheduler that the job is training ready
+    rpc ReportReady (ReportReadyRequest) returns (Empty) {};
+}
+
+message ReportStableRequest {
+    uint32 job_id = 1;
+}
+
+message ReportReadyRequest {
+    uint32 trainer_id = 1;
+}

@@ -40,11 +40,11 @@ make
 ```Bash
 cd scheduler
 ```
-- Figure 8(a): `bash run_fig8a.sh`. This takes about 30 minutes.
-- Figure 8(b): `bash run_fig8b.sh`. This might take a few days to finish the simulation of all of the traces!
+- Figure 8(a): `source run_fig8a.sh`. This takes about 30 minutes.
+- Figure 8(b): `source run_fig8b.sh`. This might take a few days to finish the simulation of all of the traces!
 - Figure 9: `bash run_fig9.sh`. This takes about 7 minutes. Note that the results might be a bit different because the trace used is randomly generated. 
-- Figure 10: `bash run_fig10.sh`. This takes about 2 minutes.  Note that the results might be a bit different because the trace used is randomly generated.
-- Figure 11: `bash run_fig11.sh`. This takes about 10 minutes. Note that the results might be a bit different because the trace used is randomly generated.
+- Figure 10: `source run_fig10.sh`. This takes about 2 minutes.  Note that the results might be a bit different because the trace used is randomly generated.
+- Figure 11: `source run_fig11.sh`. This takes about 10 minutes. Note that the results might be a bit different because the trace used is randomly generated.
 
 All the logs and results will saved be in the `<repo>/plot_figure/logs/` directory.
 

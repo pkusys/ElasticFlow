@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+import "common.proto";
+
+service MasterToWorker {
+    // starts a job on worker
+    rpc RunJob (RunJobRequest) returns (Empty) {};
+    // updates a job on worker
+    rpc UpdateJob (UpdateJobRequest) returns (Empty) {};
+    // new group
+    rpc NewGroup (NewGroupRequest) returns (Empty) {};
+    // kills a job on worker
+    rpc KillJob (KillJobRequest) returns (Empty) {};
+    // send broadcast finish message to workers
+    rpc BroadcastFinish (Empty) returns (Empty) {};
+    // send train begin message to workers
+    rpc TrainingBegin (Empty) returns (Empty) {};
+    // restart all the trainers
+    rpc RestartTrainers (Empty) returns (Empty) {};
+    // shut down the worker
+    rpc ShutDown (Empty) returns (Empty) {};
+}
+
+message JobInfo {
+    string job_name = 1;
+    uint32 batch_size = 2;
+    uint32 job_id = 3;
+    uint32 nproc_per_node = 4;
+    uint32 nnodes = 5;
+    uint32 node_rank = 6;
+    string master_ip = 7;
+    uint32 master_port = 8;
+    // use the i-th bit to encode the i-th GPU
+    uint32 gpu_list = 9;
+    uint32 iterations = 10;
+    repeated uint32 ranks = 11;
+    bool from_scratch = 12;
+}
+
+message RunJobRequest {
+    JobInfo job_info = 1;
+}
+
+message UpdateJobRequest {
+    JobInfo job_info = 1;
+}
+
+message BroadcastRequest {
+    uint32 job_id = 1;
+    uint32 global_rank = 2;
+    uint32 src = 3;
+}
+
+message NewGroupRequest {
+    bool for_ddp = 1;
+    uint32 job_id = 2;
+    repeated uint32 ranks = 3;
+    uint32 src = 4; // only used when for_ddp = 0
+}
+
+message KillJobRequest {
+    uint32 job_id = 1;
+}
