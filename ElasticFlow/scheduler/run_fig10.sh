@@ -11,7 +11,6 @@ echo "running..."
 for setup in ${setups[@]};do
     cluster_spec="cluster_specs/${setup}.csv"
     job_file="../traces_for_ElasticFlow/100jobs_1500lam.csv"
-    #job_file="/Users/gudiandian/Desktop/github/ElasticFlow-artifact/ElasticFlow/trace_generator/1000job_1500lam.csv"
     log_folder="../../plot_figure/logs/figure10"
     mkdir ${log_folder}
     for s in ${schedule[@]};do

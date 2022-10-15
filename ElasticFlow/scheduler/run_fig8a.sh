@@ -26,3 +26,11 @@ for setup in ${setups[@]};do
         done
     done
 done
+
+cd ../chronus-scheduler/utils
+# get trace and namelist
+python3 convert_ef_trace_to_chronus.py -t ../../traces_for_ElasticFlow/elasticVpollux_e.csv -o ../../traces_for_chronus/elasticVpollux_e.csv
+python3 get_name_list.py -t ../../traces_for_chronus/elasticVpollux_e.csv -o ../../traces_for_chronus/elasticVpollux_e.lst
+cd ..
+python3 main.py --schedule=time-aware-with-lease --trace=../traces_for_chronus/elasticVpollux_e.csv --save_log_dir=../../plot_figure/logs/figure8a/chronus --ident=chronus --aggressive=True --mip_objective=adaptive --placement=local_search --profile=True --check_time_interval=60 --disable_turn_off=True --num_node_p_switch=16 --lease_term_interval=240 --name_list=../traces_for_chronus/elasticVpollux_e.lst --simulation=True --gpu_type=T4 --num_gpu_p_node=4
+cd ../scheduler

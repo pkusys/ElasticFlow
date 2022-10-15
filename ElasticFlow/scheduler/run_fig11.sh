@@ -15,7 +15,6 @@ for setup in ${setups[@]};do
     cluster_spec="cluster_specs/${setup}.csv"
     for best_effort_percentage in ${best_effort_percentages[@]};do
         job_file="../traces_for_ElasticFlow/200jobs_900lam_${best_effort_percentage}.csv"
-        #job_file="/Users/gudiandian/Desktop/github/ElasticFlow-artifact/ElasticFlow/trace_generator/1000job_1500lam.csv"
         log_folder="../../plot_figure/logs/figure11"
         mkdir ${log_folder}
         for s in ${schedule[@]};do
@@ -30,3 +29,20 @@ for setup in ${setups[@]};do
         done
     done
 done
+
+cd ../chronus-scheduler/utils
+for best_effort_percentage in ${best_effort_percentages[@]};do
+    # get trace and namelist
+    job_file="../../traces_for_ElasticFlow/200jobs_900lam_${best_effort_percentage}.csv"
+    chronus_job_file="../../traces_for_chronus/200jobs_900lam_${best_effort_percentage}.csv"
+    chronus_namelist_file="../../traces_for_chronus/200jobs_900lam_${best_effort_percentage}.lst"
+    python3 convert_ef_trace_to_chronus.py -t ${job_file} -o ${chronus_job_file}
+    python3 get_name_list.py -t ${chronus_job_file} -o ${chronus_namelist_file}
+    cd ..
+    chronus_job_file="../traces_for_chronus/200jobs_900lam_${best_effort_percentage}.csv"
+    chronus_namelist_file="../traces_for_chronus/200jobs_900lam_${best_effort_percentage}.lst"
+    save_log_dir="../../plot_figure/logs/figure11/chronus_${best_effort_percentage}"
+    python3 main.py --schedule=time-aware-with-lease --trace=${chronus_job_file} --save_log_dir=${save_log_dir} --ident=chronus --aggressive=True --mip_objective=adaptive --placement=local_search --profile=True --check_time_interval=240 --disable_turn_off=True --num_node_p_switch=8 --lease_term_interval=240 --name_list=${chronus_namelist_file} --simulation=True --gpu_type=A100 --num_gpu_p_node=8&
+    cd utils
+done
+cd ../../scheduler

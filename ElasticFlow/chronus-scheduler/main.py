@@ -4,6 +4,7 @@ import csv, json
 import numpy as np
 import pandas as pd
 import options
+import time
 from alg import PlaceMentFactory, TimeAwareWithLeaseScheduler
 from server import cluster, profiler
 from client import jobs, users
@@ -99,14 +100,34 @@ def summary_all_jobs():
     num_job = 1.0 * len(JOBS.job_list)
     jct = 0
     satisfied = 0
+    ddl_jobs = 0
     
     for job in JOBS.job_list:
         jct += (job['end_time'] - job['submit_time']) / num_job
         if (job['end_time'] - job['submit_time']) <= job['expect_time']:
             satisfied += 1
+        if job['job_type'] != 'best':
+            ddl_jobs += 1
 
     logger.info('average jct of scheduler %s is %d'%(opt.schedule,  jct))
     print(satisfied, "jobs satisfied", len(JOBS.job_list), "jobs in total")
+
+    if os.path.exists(opt.save_log_dir + '/final_result.csv'):
+        fd = open(opt.save_log_dir + '/final_result.csv', 'a+')
+        log_writer = csv.writer(fd)  
+        log_writer.writerow([time.strftime("%Y%m%d-%H-%M-%S", time.localtime()), 
+            str(float(accepted_jobs)/(accepted_jobs+declined_jobs)), 
+            "n"+str(opt.num_node_p_switch)+"g"+str(opt.num_gpu_p_node), 
+            opt.trace, "chronus", "elastic"])
+    else:
+        fd = open(opt.save_log_dir + '/final_result.csv', 'w+')
+        log_writer = csv.writer(fd)  
+        log_writer.writerow(['time', 'ddl_satis_ratio', 'cluster_spec', 'trace_file', 'scheduler', 'scheme'])
+        log_writer.writerow([time.strftime("%Y%m%d-%H-%M-%S", time.localtime()), 
+            str(float(accepted_jobs)/(accepted_jobs+declined_jobs)), 
+            "n"+str(opt.num_node_p_switch)+"g"+str(opt.num_gpu_p_node), 
+            opt.trace, "chronus", "elastic"])
+    fd.close()
 
 
 def main():

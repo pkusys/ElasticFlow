@@ -160,10 +160,10 @@ class TimeAwareWithLeaseScheduler(BaseScheduler):
 
         # for end-to-end experiments
         self.gpu_type = kwargs.get('gpu_type', 'A100')
-        if self.gpu_type == "A100":
-            throughput_path = "../scheduler/throughputs_A100/"
-        elif self.gpu_type == "T4":
+        if self.gpu_type == "T4":
             throughput_path = "../scheduler/throughputs_T4/"
+        else:
+            throughput_path = "../scheduler/throughputs_A100/"
         for throughput_file in os.listdir(throughput_path):
             profiles.parse_throughput_file(throughput_path + throughput_file)
         self.effiency_list = list()
