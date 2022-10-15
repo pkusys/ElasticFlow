@@ -4,3 +4,4 @@ pandas
 grpcio
 grpcio-tools
 psutil
+mip==1.12.0

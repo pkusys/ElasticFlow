@@ -8,6 +8,7 @@
 		- `runtime/` contains the gRPC source code for communication between the scheduler, master, worker, and trainer. 
 		- `throughputs_A100/` contains the profiled throughputs for DL models on A100 GPUs.
 		- `throughputs_T4/`ontains the profiled throughputs for DL models on T4 GPUs (provided by [adaptdl](https://github.com/petuum/adaptdl/tree/osdi21-artifact)).
+	- `chronus-scheduler/` contains the implementation of Chronus scheduling algorithm provided by [this repo](https://github.com/S-Lab-System-Group/ChronusArtifact).
 
 calc.py computes metrics, e.g., avg. JCT, Makespan, and 99th JCT.
 cluster.py, switch.py, and node.py contain implementations of the cluster.
@@ -30,9 +31,12 @@ cd ElasticFlow
 python -m pip install --upgrade pip
 pip install -r requirements.txt
 # make gRPC
-cd scheduler
+cd chronus-scheduler
+make
+cd ../scheduler
 make
 ```
+Note that the Chronus baseline relies on the Gurobi optimizer. Please refer to the [official website](https://www.gurobi.com) for downloading, environment configuration, and installing.
 
 ### Reproduction Steps
 
@@ -49,7 +53,7 @@ cd scheduler
 All the logs and results will saved be in the `<repo>/plot_figure/logs/` directory.
 
 2. Plot the figures
-Please refer to `<repo>/plot_figures/README.md`
+Please refer to `<repo>/plot_figure/README.md`
 
 
 ## Reproduce testbed results
@@ -65,17 +69,110 @@ The provided scripts can be executed on Azure Standard_ND96asr_A100 VMs. Please 
 
 ### Environment
 
+1. Get the dataset
+The datasets and model configuration files can be downloaded from [this link](https://drive.google.com/file/d/1gxFg842sYH6JNqCkKtYf7DfkFAunkh_n/view?usp=sharing). 
+
+The datasets need to be placed in the `/mnt/data1/` directory.
+The `/mnt/data1/` directory should be like:
+```
+/mnt/
+| - data1/
+|	| - imagenet/
+|	| - LibriSpeech/
+|	| - aclImdb/
+|	| - bert/
+|	| - gpt2/
+```
+If there is data corruption, please download the datasets from the official website.
+
+2. Get the docker container
 Run `bash prepare_container.sh`.
 
-### Reproduction Steps
-1. Run the experiments.
-```Bash
-cd scheduler
-```
-- Figure 7(a): 
-- Figure 7(b): 
-- Figure 12(a): 
-- Figure 12(b): 
+Note that the docker size is 21.5GB, make sure that there is enough disk space.
 
-2. Plot the figures
-Please refer to `<repo>/plot_figures/README.md`
+### Reproduction Steps
+```Bash
+cd /workspace/ElasticFlow-artifact/ElasticFlow/scheduler
+```
+Then, run the experiments in container.
+1. Figure 6(a):
+On the master node, run the master server:
+```Bash
+python python master.py -p 6888 -n 4
+```
+On each of four worker nodes (the master node can be included in the worker nodes), run the worker:
+```Bash
+python worker.py -i <master_ip> -P 6888 -p 9000 -n 8 -A <master_ip> -g 6889 -w 32 -r ../elastic-training-executor/ -x /opt/conda/bin/python3.8 --dynamic_requests=True --scheduler_port=6890 --scheduler_addr=<master_ip>
+```
+Then, wait for a few seconds, if you see messages such as `trainer 0 idles ... ...`, it means the trainer processes have been successfully started. Then, you can start the scheduler on the master node:
+```Bash
+python scheduler.py --cluster_spec=cluster_specs/n4g8.csv --print --scheme=<placement_algo> --trace_file=../traces_for_ElasticFlow/25job_endtoend_trace.csv  --schedule=<scheduling_algo> --log_path=../../plot_figure/logs/figure6a/<scheduling_algo> --simulation=False --scheduling_slot=240 --restart_threshold=70 --gpu_type=A100
+```
+The `<placement_algo>` should be `gandiva` for gandiva scheduler and `elastic` for other schedulers.
+
+For Chronus scheduler, you should run the scheduler in the `chronus-scheduler` directory:
+```Bash
+cd ../chronus-scheduler/utils
+# convert trace
+python convert_ef_trace_to_chronus.py -t ../../traces_for_ElasticFlow/25job_endtoend_trace.csv -o ../../traces_for_chronus/25job_endtoend_trace.csv
+python get_name_list.py -t ../../traces_for_chronus/25job_endtoend_trace.csv -o ../../traces_for_chronus/25job_endtoend_trace.lst
+# run scheduler
+cd ..
+python main.py --schedule=time-aware-with-lease --trace=../traces_for_chronus/25job_endtoend_trace.csv --save_log_dir=../../plot_figure/logs/figure6a/chronus --ident=chronus --aggressive=True   --mip_objective=adaptive --placement=local_search --profile=True --check_time_interval=240 --disable_turn_off=True --num_node_p_switch=4 --lease_term_interval=240 --name_list=../traces_for_chronus/25job_endtoend_trace.lst --num_gpu_p_node=8 --gpu_type=A100
+```
+
+It takes a few hours for each setting.
+
+2. Figure 6(b) & Figure 7: 
+On the master node, run the master server:
+```Bash
+python python master.py -p 6888 -n 16
+```
+On each of four worker nodes (the master node can be included in the worker nodes), run the worker:
+```Bash
+python worker.py -i <master_ip> -P 6888 -p 9000 -n 8 -A <master_ip> -g 6889 -w 128 -r ../elastic-training-executor/ -x /opt/conda/bin/python3.8 --dynamic_requests=True --scheduler_port=6890 --scheduler_addr=<master_ip>
+```
+Then, wait for a few seconds, if you see messages such as `trainer 0 idles ... ...`, it means the trainer processes have been successfully started. Then, you can start the scheduler on the master node:
+```Bash
+python scheduler.py --cluster_spec=cluster_specs/n16g8.csv --print --scheme=<placement_algo> --trace_file=../traces_for_ElasticFlow/195job_endtoend_trace.csv  --schedule=<scheduling_algo> --log_path=../../plot_figure/logs/figure6b/<scheduling_algo> --simulation=False --scheduling_slot=240 --restart_threshold=70 --gpu_type=A100
+```
+The `<placement_algo>` should be `gandiva` for gandiva scheduler and `elastic` for other schedulers.
+
+For Chronus scheduler, you should run the scheduler in the `chronus-scheduler` directory:
+```Bash
+cd ../chronus-scheduler/utils
+# convert trace
+python convert_ef_trace_to_chronus.py -t ../../traces_for_ElasticFlow/195job_endtoend_trace.csv -o ../../traces_for_chronus/195job_endtoend_trace.csv
+python get_name_list.py -t ../../traces_for_chronus/195job_endtoend_trace.csv -o ../../traces_for_chronus/195job_endtoend_trace.lst
+# run scheduler
+cd ..
+python main.py --schedule=time-aware-with-lease --trace=../traces_for_chronus/195job_endtoend_trace.csv --save_log_dir=../../plot_figure/logs/figureba/chronus --ident=chronus --aggressive=True   --mip_objective=adaptive --placement=local_search --profile=True --check_time_interval=240 --disable_turn_off=True --num_node_p_switch=16 --lease_term_interval=240 --name_list=../traces_for_chronus/195job_endtoend_trace.lst --num_gpu_p_node=8 --gpu_type=A100
+```
+
+It takes a few hours for each setting.
+
+3. Figure 12(a): 
+On the master node, run the master server:
+```Bash
+python master.py -p 6888 -t overhead_measurement_traces/<model>_profile.txt -d 1
+```
+On each of eight worker nodes (the master node can be included in the worker nodes), run the worker:
+```Bash
+python worker.py -i <master_ip> -P 6888 -p 9000 -n 8 -A <master_ip> -g 6889 -w 64 -r ../elastic-training-executor/ -x /opt/conda/bin/python3.8 
+```
+The time for running the whole trace is the profiling overhead for each model.
+
+4. Figure 12(b): 
+On the master node, run the master server:
+```Bash
+python master.py -p 6888 -t overhead_measurement_traces/<model>_<case>_overhead.txt -d 1
+```
+On each of two worker nodes (the master node can be included in the worker nodes), run the worker:
+```Bash
+python worker.py -i <master_ip> -P 6888 -p 9000 -n 8 -A <master_ip> -g 6889 -w 16 -r ../elastic-training-executor/ -x /opt/conda/bin/python3.8 
+```
+The time for running the whole trace is the scaling/migration overhead for each case.
+
+
+### Plotting figures
+For plotting figures, please refer to `<repo>/plot_figure/README.md`

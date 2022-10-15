@@ -37,6 +37,7 @@ The model configuration files include `merges.txt` and `vocab.json` for GPT2 mod
 
 You can download the datasets following the official guide of each dataset.
 We have packed a smaller dataset (including the model configuration files) and you can download it from [this link](https://drive.google.com/file/d/1gxFg842sYH6JNqCkKtYf7DfkFAunkh_n/view?usp=sharing). 
+
 The datasets need to be placed in the `/mnt/data1/` directory.
 The `/mnt/data1/` directory should be like:
 ```

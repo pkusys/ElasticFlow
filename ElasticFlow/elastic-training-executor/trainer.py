@@ -434,7 +434,7 @@ if __name__ == "__main__":
                         help='load checkpoint or not')
     parser.add_argument('--scheduler_addr', type=str, help='scheduler server ip address')
     parser.add_argument('--scheduler_port', type=int, help='scheduler server port')
-    parser.add_argument('--throughput_path', type=str, default="../scheduler/throughputs-new/", help='scheduler server port')
+    parser.add_argument('--throughput_path', type=str, default="../scheduler/throughputs_A100/", help='scheduler server port')
     args = parser.parse_args()
     #torch.backends.cudnn.enabled = False
     opt_dict = vars(args)

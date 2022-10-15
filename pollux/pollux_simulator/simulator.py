@@ -473,7 +473,20 @@ def simulate(args):
         satis_dict = simulator.get_satisfactory_ratio()
         print("DDL satisfactory ratio:", sum(satis_dict.values())/len(satis_dict) if satis_dict else 0)
     if args.output:
+        ratio = sum(satis_dict.values())/len(satis_dict) if satis_dict else 0
         simulator.output_logs(args.output)
+        if os.path.exists(args.output + '/final_result.csv'):
+            fd = open(args.output + '/final_result.csv', 'a+')
+            log_writer = csv.writer(fd)  
+            log_writer.writerow([time.strftime("%Y%m%d-%H-%M-%S", time.localtime()), 
+                str(ratio), "n16g4", args.workload, "pollux", "pollux"])
+        else:
+            fd = open(args.output + '/final_result.csv', 'w+')
+            log_writer = csv.writer(fd)  
+            log_writer.writerow(['time', 'ddl_satis_ratio', 'cluster_spec', 'trace_file', 'scheduler', 'scheme'])
+            log_writer.writerow([time.strftime("%Y%m%d-%H-%M-%S", time.localtime()), 
+                str(ratio), "n16g4", args.workload, "pollux", "pollux"])
+        fd.close()
     return simulator.logs, simulator.get_jcts()
 
 
