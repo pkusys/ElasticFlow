@@ -74,6 +74,12 @@ Note that the docker size is 21.5GB, make sure that there is enough disk space. 
 
 2. Get the dataset.
 
+The datasets include:
+ - [ImageNet](https://www.image-net.org)
+ - [CoLA](https://nyu-mll.github.io/CoLA/)
+ - [aclImdb](http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz)
+ - [LibriSpeech](https://pytorch.org/audio/main/generated/torchaudio.datasets.LIBRISPEECH.html)
+
 The datasets and model configuration files can be downloaded from [this link](https://drive.google.com/file/d/1gxFg842sYH6JNqCkKtYf7DfkFAunkh_n/view?usp=sharing). 
 
 The datasets need to be placed in the `/mnt/data1/` directory.
@@ -91,7 +97,7 @@ If there is data corruption, please download the datasets from the official webs
 
 
 ### Reproduction Steps
-First, enter the scheduler directory:
+First, enter the scheduler directory in the container:
 ```Bash
 cd /workspace/ElasticFlow-artifact/ElasticFlow/scheduler
 ```

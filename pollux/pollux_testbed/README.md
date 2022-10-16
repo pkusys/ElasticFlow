@@ -27,6 +27,8 @@ You need to add this line to `/etc/exports` on the master node:
 ```
 Then, the other configurations needed by NFS will be automatically cnfigured by the scripts in the following steps.
 
+Also, please modify the `prefix` in `environmrnt.yaml` to the dir where your conda is.
+
 2. Dataset
 
 The datasets include:
@@ -95,7 +97,7 @@ To get the scheduling results, run:
 $ python run_monitor.py pollux_result.json
 ```
 
-To parse the results and get the final deadline satisfactory ration, run:
+To parse the results and get the final deadline satisfactory ratio, run:
 ```Bash
 $ python parse_result.py --input pollux_result.json  --trace ../ElasticFlow/traces_for_ElasticFlow/25job_endtoend_trace.csv
 ```
