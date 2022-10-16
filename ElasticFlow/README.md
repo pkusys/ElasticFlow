@@ -1,23 +1,19 @@
 # ElasticFlow Experiments
 
 ## Contents
-- `ElasticFlow/` contains code for simulation and is adapted from Tiresias.
+- `ElasticFlow/` contains code for simulation and is adapted from [Tiresias](https://github.com/SymbioticLab/Tiresias).
+	- `chronus-scheduler/` contains the implementation of Chronus scheduling algorithm provided by [this repo](https://github.com/S-Lab-System-Group/ChronusArtifact).
 	- `elastic-training-executor/` contains testbed training code for testbed experiments. It is not needed in simulation experiments.
 	- `scheduler/` contains the implementation of ElasticFlow scheduling algorithm and some baseline algorithms.
 		- `cluster_spec/` contains configuration files for cluster, e.g., the number of nodes, the number of GPU per node.
+		- `overhead_measurement_traces/` contains the traces for measuring the overheads of the implementation of ElasticFlow. It is not needed in simulation.
 		- `runtime/` contains the gRPC source code for communication between the scheduler, master, worker, and trainer. 
 		- `throughputs_A100/` contains the profiled throughputs for DL models on A100 GPUs.
-		- `throughputs_T4/`ontains the profiled throughputs for DL models on T4 GPUs (provided by [adaptdl](https://github.com/petuum/adaptdl/tree/osdi21-artifact)).
-	- `chronus-scheduler/` contains the implementation of Chronus scheduling algorithm provided by [this repo](https://github.com/S-Lab-System-Group/ChronusArtifact).
-
-calc.py computes metrics, e.g., avg. JCT, Makespan, and 99th JCT.
-cluster.py, switch.py, and node.py contain implementations of the cluster.
-jobs.py and model.py contain information of the jobs.
-flags.py contains the argument definition method.
-log.py and utils.py contain auxiliary functions.
-matching.py contains the implementation of the matching algorithm for Muri.
-run_sim.py contains the implementation of different scheduling policies.
-
+		- `throughputs_T4/` contains the profiled throughputs for DL models on T4 GPUs (provided by [adaptdl](https://github.com/petuum/adaptdl/tree/osdi21-artifact)).
+		- `trace_generator/` contains the script for generating job traces.
+	- `prepare_container.sh` is the script for preparing the docker container for testbed experiments. It is not needed in simulation.
+	- `topo.xml` is needed for testbed experiments. It is not needed in simulation.
+	
 
 ## Reproduce simulation results
 
@@ -52,7 +48,8 @@ cd scheduler
 
 All the logs and results will saved be in the `<repo>/plot_figure/logs/` directory.
 
-2. Plot the figures
+2. Plot the figures.
+
 Please refer to `<repo>/plot_figure/README.md`
 
 
@@ -69,7 +66,14 @@ The provided scripts can be executed on Azure Standard_ND96asr_A100 VMs. Please 
 
 ### Environment
 
-1. Get the dataset
+1. Get the docker container.
+
+Run `bash prepare_container.sh`.
+
+Note that the docker size is 21.5GB, make sure that there is enough disk space. There should be a `/mnt` directory. NVMe disk is required for this script.
+
+2. Get the dataset.
+
 The datasets and model configuration files can be downloaded from [this link](https://drive.google.com/file/d/1gxFg842sYH6JNqCkKtYf7DfkFAunkh_n/view?usp=sharing). 
 
 The datasets need to be placed in the `/mnt/data1/` directory.
@@ -85,17 +89,15 @@ The `/mnt/data1/` directory should be like:
 ```
 If there is data corruption, please download the datasets from the official website.
 
-2. Get the docker container
-Run `bash prepare_container.sh`.
-
-Note that the docker size is 21.5GB, make sure that there is enough disk space.
 
 ### Reproduction Steps
+First, enter the scheduler directory:
 ```Bash
 cd /workspace/ElasticFlow-artifact/ElasticFlow/scheduler
 ```
 Then, run the experiments in container.
 1. Figure 6(a):
+
 On the master node, run the master server:
 ```Bash
 python python master.py -p 6888 -n 4
@@ -108,7 +110,12 @@ Then, wait for a few seconds, if you see messages such as `trainer 0 idles ... .
 ```Bash
 python scheduler.py --cluster_spec=cluster_specs/n4g8.csv --print --scheme=<placement_algo> --trace_file=../traces_for_ElasticFlow/25job_endtoend_trace.csv  --schedule=<scheduling_algo> --log_path=../../plot_figure/logs/figure6a/<scheduling_algo> --simulation=False --scheduling_slot=240 --restart_threshold=70 --gpu_type=A100
 ```
-The `<placement_algo>` should be `gandiva` for gandiva scheduler and `elastic` for other schedulers.
+For ElasticFlow algorithm, `<placement_algo>` should be `elastic` and `<scheduling_algo>` should be `ef-accessctrl`
+For EDF algorithm, `<placement_algo>` should be `elastic` and `<scheduling_algo>` should be `edf`
+For Gandiva algorithm, `<placement_algo>` should be `gandiva` and `<scheduling_algo>` should be `gandiva`
+For Tiresias algorithm, `<placement_algo>` should be `elastic` and `<scheduling_algo>` should be `dlas-gpu`
+For Themis algorithm, `<placement_algo>` should be `elastic` and `<scheduling_algo>` should be `themis`
+
 
 For Chronus scheduler, you should run the scheduler in the `chronus-scheduler` directory:
 ```Bash
@@ -124,6 +131,7 @@ python main.py --schedule=time-aware-with-lease --trace=../traces_for_chronus/25
 It takes a few hours for each setting.
 
 2. Figure 6(b) & Figure 7: 
+
 On the master node, run the master server:
 ```Bash
 python python master.py -p 6888 -n 16
@@ -136,7 +144,6 @@ Then, wait for a few seconds, if you see messages such as `trainer 0 idles ... .
 ```Bash
 python scheduler.py --cluster_spec=cluster_specs/n16g8.csv --print --scheme=<placement_algo> --trace_file=../traces_for_ElasticFlow/195job_endtoend_trace.csv  --schedule=<scheduling_algo> --log_path=../../plot_figure/logs/figure6b/<scheduling_algo> --simulation=False --scheduling_slot=240 --restart_threshold=70 --gpu_type=A100
 ```
-The `<placement_algo>` should be `gandiva` for gandiva scheduler and `elastic` for other schedulers.
 
 For Chronus scheduler, you should run the scheduler in the `chronus-scheduler` directory:
 ```Bash
@@ -152,6 +159,7 @@ python main.py --schedule=time-aware-with-lease --trace=../traces_for_chronus/19
 It takes a few hours for each setting.
 
 3. Figure 12(a): 
+
 On the master node, run the master server:
 ```Bash
 python master.py -p 6888 -t overhead_measurement_traces/<model>_profile.txt -d 1
@@ -163,6 +171,7 @@ python worker.py -i <master_ip> -P 6888 -p 9000 -n 8 -A <master_ip> -g 6889 -w 6
 The time for running the whole trace is the profiling overhead for each model.
 
 4. Figure 12(b): 
+
 On the master node, run the master server:
 ```Bash
 python master.py -p 6888 -t overhead_measurement_traces/<model>_<case>_overhead.txt -d 1

@@ -1,3 +1,7 @@
+# This file can draw the subfigures for Figure 12a in our paper.
+# Usage: 
+# 1. Change the raw values accordingly (existing numbers are our test results)
+# 2. python3 draw_fig12a.py
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np

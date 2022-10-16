@@ -1,3 +1,9 @@
+# This file can draw the subfigures for Figure 11 in our paper.
+# Usage: 
+# 1. Change the raw values accordingly (existing numbers are our test results)
+# 2. python3 draw_fig11.py
+# Note that the JCT data should be the average JCT of best effort jobs 
+# (not including jobs with deadlines)
 import matplotlib.pyplot as plt
 import csv
 

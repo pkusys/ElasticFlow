@@ -15,8 +15,8 @@ from goodput import GoodputFunction, fit_perf_params
 from speedup import SpeedupFunction
 from utils import JobInfo, NodeInfo
 from pollux import PolluxPolicy
-from optimus import OptimusPolicy
-from tiresias import TiresiasPolicy
+#from optimus import OptimusPolicy
+#from tiresias import TiresiasPolicy
 
 
 class Job(object):
@@ -235,7 +235,7 @@ class Cluster(object):
             for job in self.jobs:
                 if job.application.name == "ncf":
                     job.target_batch_size = 32768
-        elif isinstance(policy, TiresiasPolicy):
+        """elif isinstance(policy, TiresiasPolicy):
             self.jobs = [Job(row.name, APPLICATIONS[row.application], row.time,
                              target_num_replicas=row.num_replicas,
                              target_batch_size=row.batch_size)
@@ -243,7 +243,7 @@ class Cluster(object):
         elif isinstance(policy, OptimusPolicy):
             self.jobs = [Job(row.name, APPLICATIONS[row.application], row.time,
                              target_batch_size=row.batch_size)
-                         for row in workload.itertuples()]
+                         for row in workload.itertuples()]"""
         self.allocations = {}
         self.logs = []
         self.utility = []

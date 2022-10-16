@@ -1,3 +1,7 @@
+# This file can draw the subfigures for Figure 10 in our paper.
+# Usage: 
+# 1. Change the dir to the traces accordingly (line9-14)
+# 2. python3 plot_fig10.py
 import matplotlib.pyplot as plt
 import csv
 import sys
@@ -5,7 +9,7 @@ import sys
 edf_file = "../logs/figure10/edf/scheduling_events.csv"
 elasticflow_file = "../logs/figure10/ef-accessctrl/scheduling_events.csv"
 g_file = "../logs/figure10/gandiva/scheduling_events.csv"
-t_file = "../logs/figure10/tiresias/scheduling_events.csv"
+t_file = "../logs/figure10/dlas-gpu/scheduling_events.csv"
 themis_file = "../logs/figure10/themis/scheduling_events.csv"
 c_file = "../logs/figure10/chronus/time-aware-with-lease_resource.csv"
 fontsizeValue=32

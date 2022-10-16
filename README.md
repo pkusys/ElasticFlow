@@ -13,10 +13,6 @@ We provide the artifact for the ASPLOS 2023 paper "ElasticFlow: An Elastic Serve
 
 Please see `ElasticFlow/README.md` for more details.
 
-### Chronus simulation
-
-Please see `chronus/README.md` for more details.
-
 ### Pollux simulation
 
 Please see `pollux/pollux_simulator/README.md` for more details.
@@ -29,9 +25,6 @@ You may use the Azure Standard_ND96asr_A100 VMs for reproduction.
 
 ### General Testbed Experiments
 Please see `ElasticFlow/README.md` for more details.
-
-### Chronus Testbed Experiments
-Please see `chronus/README.md` for more details.
 
 ### Pollux Testbed Experiments
 As the Pollux baseline is implemented on k8s, we do not interage Pollux in the ElasticFlow system for comparison. We use the open-sourced artifact from the [Pollux repo](https://github.com/petuum/adaptdl/tree/osdi21-artifact) for testbed experiments. 

@@ -1,0 +1,6 @@
+time,ddl_satis_ratio,cluster_spec,trace_file,scheduler,scheme
+20221014-17-36-56,0.99,cluster_specs/n16g8.csv,../traces_for_ElasticFlow/100jobs_1500lam.csv,themis,elastic
+20221014-17-38-57,0.99,cluster_specs/n16g8.csv,../traces_for_ElasticFlow/100jobs_1500lam.csv,themis,elastic
+20221014-18-44-46,0.99,cluster_specs/n16g8.csv,../traces_for_ElasticFlow/100jobs_1500lam.csv,themis,elastic
+20221014-19-02-03,0.99,cluster_specs/n16g8.csv,../traces_for_ElasticFlow/100jobs_1500lam.csv,themis,elastic
+20221014-21-52-39,0.99,cluster_specs/n16g8.csv,../traces_for_ElasticFlow/100jobs_1500lam.csv,themis,elastic
