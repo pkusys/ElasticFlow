@@ -13,9 +13,10 @@ The key files are:
 
 ## Getting Started
 1. Hardware requirements
+
 The testbed experiments requires at least four Azure Standard_ND96asr_A100 nodes, each with 8 A100 GPUs, 96 CPU cores, 900 GB RAM, and eight NVIDIA Mellanox HDR InfiniBand HCAs. 
 NVMe is required for dataset and DL model checkpoint storage to speed up the I/O process. 
-At least 160G NVMe storage is needed on each node for the dataset and model checkpoints.
+At least **160G NVMe** storage is needed on each node for the dataset and model checkpoints.
 
 Running the testbed experiment of Pollux takes about one day, and more time is needed for environment preparation.
 
@@ -27,13 +28,14 @@ You need to add this line to `/etc/exports` on the master node:
 Then, the other configurations needed by NFS will be automatically cnfigured by the scripts in the following steps.
 
 2. Dataset
-The datasets include:
- - ImageNet
- - CoLA
- - aclImdb
- - LibriSpeech
 
-The model configuration files include `merges.txt` and `vocab.json` for GPT2 model.
+The datasets include:
+ - [ImageNet](https://www.image-net.org)
+ - [CoLA](https://nyu-mll.github.io/CoLA/)
+ - [aclImdb](http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz)
+ - [LibriSpeech](https://pytorch.org/audio/main/generated/torchaudio.datasets.LIBRISPEECH.html)
+
+The model configuration files include [merges.txt](https://huggingface.co/gpt2/raw/main/merges.txt) and [vocab.json](https://huggingface.co/gpt2/raw/main/vocab.json) for GPT2 model.
 
 You can download the datasets following the official guide of each dataset.
 We have packed a smaller dataset (including the model configuration files) and you can download it from [this link](https://drive.google.com/file/d/1gxFg842sYH6JNqCkKtYf7DfkFAunkh_n/view?usp=sharing). 
@@ -52,6 +54,7 @@ The `/mnt/data1/` directory should be like:
 If there is data corruption, please download the datasets from the official website.
 
 3. Kubernetes configuration
+
 Configuring Kubernets requires the disk usgae of the `/` directory is under 80%. You make check the disk usage with the `df -h` command. 
 
 First, you need to log in docker on each node:
@@ -94,5 +97,5 @@ $ python run_monitor.py pollux_result.json
 
 To parse the results and get the final deadline satisfactory ration, run:
 ```Bash
-$ python parse_result.py --input pollux_result.json  --trace ../ElasticFlow/traces/itp_day1.csv
+$ python parse_result.py --input pollux_result.json  --trace ../ElasticFlow/traces_for_ElasticFlow/25job_endtoend_trace.csv
 ```
