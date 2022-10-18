@@ -9,6 +9,7 @@ import os
 
 import numpy as np
 import pandas
+import subprocess
 
 from applications import APPLICATIONS
 from goodput import GoodputFunction, fit_perf_params
@@ -358,12 +359,12 @@ class Cluster(object):
         job_infos = {}
         for job in self.jobs:
             if self.current_time >= job.submission_time and job.completion_time is None:
-                if isinstance(self.policy, TiresiasPolicy):
-                    job_infos[job.name] = self.get_tiresias_job_info(job)
-                elif isinstance(self.policy, OptimusPolicy):
-                    job_infos[job.name] = self.get_optimus_job_info(job)
-                else:
-                    job_infos[job.name] = self.get_pollux_job_info(job)
+                #if isinstance(self.policy, TiresiasPolicy):
+                #    job_infos[job.name] = self.get_tiresias_job_info(job)
+                #elif isinstance(self.policy, OptimusPolicy):
+                #    job_infos[job.name] = self.get_optimus_job_info(job)
+                #else:
+                job_infos[job.name] = self.get_pollux_job_info(job)
         return job_infos
 
     def get_pollux_job_info(self, job):
@@ -474,7 +475,13 @@ def simulate(args):
         print("DDL satisfactory ratio:", sum(satis_dict.values())/len(satis_dict) if satis_dict else 0)
     if args.output:
         ratio = sum(satis_dict.values())/len(satis_dict) if satis_dict else 0
-        simulator.output_logs(args.output)
+        simulator.output_logs(args.output + "/output")
+        cmd = 'mkdir -p ' + args.output
+        ''' python 2.7
+        status, output = commands.getstatusoutput(cmd)
+        '''
+        #python 2.7 & 3
+        ret = subprocess.check_output(cmd, shell=True)
         if os.path.exists(args.output + '/final_result.csv'):
             fd = open(args.output + '/final_result.csv', 'a+')
             log_writer = csv.writer(fd)  

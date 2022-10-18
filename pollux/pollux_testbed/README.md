@@ -1,15 +1,15 @@
 # Pollux Testbed Experiments
 
-Note: Due to the execution scripts of testbed experiments are highly related to intracompany platform, we only demonstrate the functionality and provide the reproduction steps on the hardware devices we use. Please adjust to your platform if you would like to execute the testbed experiment.
+Note: Due to the execution scripts of testbed experiments are highly related to internal testbed platform, we only demonstrate the functionality and provide the reproduction steps on the hardware devices we use. Please adjust to your platform if you would like to execute the testbed experiment.
 
 This directory contains the code used for the testbed experiments 
 of Pollux baseline in Figure6(a) of the paper. The code is adapted from
 [Pollux (OSDI'21) artifact](https://github.com/petuum/adaptdl/tree/osdi21-artifact).
 The key files are:
 
-- models/ contains the implementations of each evaluated model listed in Table 1.
-- run_workload.py submits jobs according to a workload trace.
-- run_monitor.py monitors and logs the cluster state during each cluster scheduling experiment.
+- `models/` contains the implementations of each evaluated model listed in Table 1.
+- `run_workload.py` submits jobs according to a workload trace.
+- `run_monitor.py` monitors and logs the cluster state during each cluster scheduling experiment.
 
 ## Getting Started
 1. Hardware requirements
@@ -58,6 +58,8 @@ If there is data corruption, please download the datasets from the official webs
 3. Kubernetes configuration
 
 Configuring Kubernets requires the disk usgae of the `/` directory is under 80%. You make check the disk usage with the `df -h` command. 
+
+For installation problems, please refer to the [Pollux benchmark](https://github.com/petuum/adaptdl/tree/osdi21-artifact/benchmark).
 
 First, you need to log in docker on each node:
 ```Bash

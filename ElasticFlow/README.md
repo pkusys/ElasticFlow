@@ -36,6 +36,10 @@ Note that the Chronus baseline relies on the Gurobi optimizer. Please refer to t
 
 ### Reproduction Steps
 
+0. Trace preparation.
+
+You can send your github account to `gudiandian1998 at pku dot edu dot cn` so that we can share the job traces with you. The descriptions of the job traces are in `<repo>/private_data.md`.
+
 1. Run the experiments.
 ```Bash
 cd scheduler
@@ -55,7 +59,7 @@ Please refer to `<repo>/plot_figure/README.md`
 
 ## Reproduce testbed results
 
-Note: Due to the execution scripts of testbed experiments are highly related to intracompany platform, we only demonstrate the functionality and provide the reproduction steps on the hardware devices we use. Please adjust to your platform if you would like to execute the testbed experiment.
+Note: Due to the execution scripts of testbed experiments are highly related to internal testbed platform, we only demonstrate the functionality and provide the reproduction steps on the hardware devices we use. Please adjust to your platform if you would like to execute the testbed experiment.
 
 ### Hardware
 

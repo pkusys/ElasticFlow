@@ -41,7 +41,7 @@ $ python3 simulator.py --policy pollux elasticVpollux_p.csv --output ../../plot_
 Average JCT: 71114.34871794871
 DDL satisfactory ratio: 0.5025641025641026
 ```
-The simulation takes about a day.
+The simulation takes about 17.5 hours.
 
 ## Plotting figures
 Please refer to `<repo>/plot_figure/.README.md`
