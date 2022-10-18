@@ -9,7 +9,9 @@ We provide the artifact for the ASPLOS 2023 paper "ElasticFlow: An Elastic Serve
 
 ## Simulation Experiments
 
-The simulation experiments need jobs traces that can not make public for now. Please contact us for the job traces. You can send your github account to `gudiandian1998 at pku dot edu dot cn` so that we can share the job traces with you. The descriptions of the job traces are in `private_data.md`.
+The simulation experiments need jobs traces that can not make public for now due to policy reasons. We are trying our best to make the trace files public as soon as possible. To get the traces, you need to sign an NDA (non-disclosure agreement) with our company. Please send us your name, affiliation, and address so that we can sign NDA with you and send you the job traces privately.
+
+The descriptions of the job traces are in `private_data.md`.
 
 ### General Simulation Experiments
 
@@ -25,7 +27,9 @@ Note: Due to the execution scripts of testbed experiments are highly related to 
 The testbed experiments require 16 nodes, each with 8 A100 GPUs, 96 CPU cores, 900 GB RAM, and eight NVIDIA Mellanox HDR InfiniBand HCAs. 
 You may use the Azure Standard_ND96asr_A100 VMs for reproduction.
 
-The testbed experiments need jobs traces that can not make public for now. Please contact us for the job traces. You can send your github account to `gudiandian1998 at pku dot edu dot cn` so that we can share the job traces with you. The descriptions of the job traces are in `private_data.md`.
+The testbed experiments need jobs traces that can not make public for now due to policy reasons. We are trying our best to make the trace files public as soon as possible. To get the traces, you need to sign an NDA (non-disclosure agreement) with our company. Please send us your name, affiliation, and address so that we can sign NDA with you and send you the job traces.
+
+The descriptions of the job traces are in `private_data.md`.
 
 ### General Testbed Experiments
 Please see `ElasticFlow/README.md` for more details.

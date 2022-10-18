@@ -38,7 +38,8 @@ Note that the Chronus baseline relies on the Gurobi optimizer. Please refer to t
 
 0. Trace preparation.
 
-You can send your github account to `gudiandian1998 at pku dot edu dot cn` so that we can share the job traces with you. The descriptions of the job traces are in `<repo>/private_data.md`.
+The job traces are not public for now due to policy reasons. We are trying our best to make the trace files public as soon as possible. To get the traces, you need to sign an NDA (non-disclosure agreement) with our company. Please send us your name, affiliation, and address so that we can sign NDA with you and send you the job traces privately.
+The descriptions of the job traces are in `private_data.md`.
 
 1. Run the experiments.
 ```Bash
