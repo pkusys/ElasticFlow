@@ -116,7 +116,7 @@ def summary_all_jobs():
         fd = open(opt.save_log_dir + '/final_result.csv', 'a+')
         log_writer = csv.writer(fd)  
         log_writer.writerow([time.strftime("%Y%m%d-%H-%M-%S", time.localtime()), 
-            str(float(accepted_jobs)/(accepted_jobs+declined_jobs)), 
+            str(float(satisfied)/ddl_jobs), 
             "n"+str(opt.num_node_p_switch)+"g"+str(opt.num_gpu_p_node), 
             opt.trace, "chronus", "elastic"])
     else:
@@ -124,7 +124,7 @@ def summary_all_jobs():
         log_writer = csv.writer(fd)  
         log_writer.writerow(['time', 'ddl_satis_ratio', 'cluster_spec', 'trace_file', 'scheduler', 'scheme'])
         log_writer.writerow([time.strftime("%Y%m%d-%H-%M-%S", time.localtime()), 
-            str(float(accepted_jobs)/(accepted_jobs+declined_jobs)), 
+            str(float(satisfied)/ddl_jobs), 
             "n"+str(opt.num_node_p_switch)+"g"+str(opt.num_gpu_p_node), 
             opt.trace, "chronus", "elastic"])
     fd.close()

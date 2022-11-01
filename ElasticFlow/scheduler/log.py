@@ -84,7 +84,7 @@ class _Log(object):
             fd.close()
             fd = open(self.log_gpu, 'w+')
             log_writer = csv.writer(fd)  
-            log_writer.writerow(['time'] + ['gpu'+str(i) for i in range(CLUSTER.num_node)] + ['ce'])
+            log_writer.writerow(['time'] + ['gpu'+str(i) for i in range(CLUSTER.num_node)])
             fd.close()
             fd = open(self.log_network, 'w+')
             log_writer = csv.writer(fd)  
@@ -120,6 +120,7 @@ class _Log(object):
         for i in range(CLUSTER.num_node):
             for j in range(CLUSTER.num_gpu_p_node):
                 row += ['gpu' + str(i) + '-' + str(j)]
+        row += ['ce']
         log_writer.writerow(row)
         fd.close()
 

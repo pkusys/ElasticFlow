@@ -27,7 +27,7 @@ for job in ${jobs[@]};do
         fi
         log_name="${log_folder}/${s}_${job}"
         mkdir $log_name
-        python3 scheduler.py --cluster_spec=${cluster_spec} --print --scheme=${placement} --trace_file=${job_file}  --schedule=${s} --log_path=${log_name} --simulation=True --scheduling_slot=240 --gpu_type=A100&
+        python3 scheduler.py --cluster_spec=${cluster_spec} --print --scheme=${placement} --trace_file=${job_file}  --schedule=${s} --log_path=${log_name} --simulation=True --scheduling_slot=60 --gpu_type=A100&
     done
 done
 
@@ -50,7 +50,7 @@ for job in ${jobs[@]};do
     chronus_job_file="../traces_for_chronus/${job}.csv"
     chronus_namelist_file="../traces_for_chronus/${job}.lst"
     save_log_dir="../../plot_figure/logs/figure8b/chronus_${job}"
-    python3 main.py --schedule=time-aware-with-lease --trace=${chronus_job_file} --save_log_dir=${save_log_dir} --ident=chronus --aggressive=True --mip_objective=adaptive --placement=local_search --profile=True --check_time_interval=240 --disable_turn_off=True --num_node_p_switch=${num_node} --lease_term_interval=240 --name_list=${chronus_namelist_file} --simulation=True --gpu_type=A100 --num_gpu_p_node=8&
+    python3 main.py --schedule=time-aware-with-lease --trace=${chronus_job_file} --save_log_dir=${save_log_dir} --ident=chronus --aggressive=True --mip_objective=adaptive --placement=local_search --profile=True --check_time_interval=60 --disable_turn_off=True --num_node_p_switch=${num_node} --lease_term_interval=240 --name_list=${chronus_namelist_file} --simulation=True --gpu_type=A100 --num_gpu_p_node=8&
     cd utils
 done
 cd ../../scheduler

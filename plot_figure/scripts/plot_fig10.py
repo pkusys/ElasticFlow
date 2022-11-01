@@ -22,7 +22,7 @@ def hist_gen(filename, debug=False):
         reader = csv.DictReader(f)
         for line in reader:
             submit_time = int(float(line['time']))
-            if submit_time - last_time < 600:
+            if submit_time - last_time < 480:
                 continue
             last_time = submit_time
             ce = float(line['ce'])

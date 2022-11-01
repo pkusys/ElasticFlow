@@ -164,7 +164,7 @@ python convert_ef_trace_to_chronus.py -t ../../traces_for_ElasticFlow/195job_end
 python get_name_list.py -t ../../traces_for_chronus/195job_endtoend_trace.csv -o ../../traces_for_chronus/195job_endtoend_trace.lst
 # run scheduler
 cd ..
-python main.py --schedule=time-aware-with-lease --trace=../traces_for_chronus/195job_endtoend_trace.csv --save_log_dir=../../plot_figure/logs/figureba/chronus --ident=chronus --aggressive=True   --mip_objective=adaptive --placement=local_search --profile=True --check_time_interval=240 --disable_turn_off=True --num_node_p_switch=16 --lease_term_interval=240 --name_list=../traces_for_chronus/195job_endtoend_trace.lst --num_gpu_p_node=8 --gpu_type=A100
+python main.py --schedule=time-aware-with-lease --trace=../traces_for_chronus/195job_endtoend_trace.csv --save_log_dir=../../plot_figure/logs/figure6b/chronus --ident=chronus --aggressive=True   --mip_objective=adaptive --placement=local_search --profile=True --check_time_interval=240 --disable_turn_off=True --num_node_p_switch=16 --lease_term_interval=240 --name_list=../traces_for_chronus/195job_endtoend_trace.lst --num_gpu_p_node=8 --gpu_type=A100
 ```
 
 It takes a few hours for each setting.
