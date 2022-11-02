@@ -10,8 +10,8 @@ import seaborn as sns
 fontsizeValue=28
 
 edf=[0.08]
-gandiva = [0.32]
-tiresias = [0.24]tiresias
+gandiva = [0.24]
+tiresias = [0.32]
 themis=[0.28]
 chronus = [0.4]
 pollux = [0.32]
