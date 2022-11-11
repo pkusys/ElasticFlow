@@ -211,7 +211,7 @@ cd <repo>/ElasticFlow/scheduler
 make
 ```
 
-Currently, the ElasticFlow prototype only supports reading submitted jobs from job trace files. We provide a 5-job trace in `../traces_for_ElasticFlow/resnet_cifar_trace.csv`. All of the jobs train the ResNet50 model with CIFAR10 dataset.
+Currently, the ElasticFlow prototype only supports reading submitted jobs from job trace files. We provide a 5-job trace in `../traces_for_ElasticFlow/resnet_cifar_trace.csv`. All of the jobs train the ResNet50 model with CIFAR10 dataset. Please prepare the CIFAR10 dataset in `<repo>/ElasticFlow/elastic-training-executor/`
 
 ### Steps
 
