@@ -19,9 +19,9 @@ m_tensors = [[1.1,2.3,2.3,2.3,4.5,9.0,9.0,9.0,9.0,9.0,9.0,9.0,392.0,64.0,15.6],
 
 
 
-m_names = ['vgg16', 'resnet50', 'inception3', 'bert', 'gpt2', 'deepspeech2', 'cifar10', 'imagenet', 'ncf', 'yolov3']
+m_names = ['vgg16', 'resnet50', 'inception3', 'bert', 'gpt2', 'deepspeech2', 'cifar10', 'imagenet', 'ncf', 'yolov3', 'resnet50_cifar10']
 # m_mem = [0.60, 0.55, 0.45, 0.13, 0.85, 0.70, 0.50, 0.85, 0.80]
-m_mem = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+m_mem = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 
 worker_mem = 5
 ps_mem = 8
@@ -53,6 +53,8 @@ def get_model(model_name):
         m_idx = 8
     elif model_name == 'yolov3':
         m_idx = 9
+    elif model_name == 'resnet50_cifar10':
+        m_idx = 10
     else:
         # m_idx = random.randint(0,5)
         m_idx = 1

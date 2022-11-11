@@ -5,6 +5,9 @@
 import matplotlib.pyplot as plt
 import csv
 import sys
+import matplotlib
+matplotlib.rcParams['pdf.fonttype'] = 42
+matplotlib.rcParams['ps.fonttype'] = 42
 
 edf_file = "../logs/figure10/edf/scheduling_events.csv"
 elasticflow_file = "../logs/figure10/ef-accessctrl/scheduling_events.csv"
@@ -22,15 +25,24 @@ def hist_gen(filename, debug=False):
         reader = csv.DictReader(f)
         for line in reader:
             submit_time = int(float(line['time']))
-            if submit_time - last_time < 480:
+            if submit_time - last_time < 2400:
+                continue
+            ce = float(line['ce'])
+            if filename[-12:] == "resource.csv" and ce == 0:
+                #print(ce)
                 continue
             last_time = submit_time
-            ce = float(line['ce'])
+            #if ce == 0:
+            #    continue
+            
             if len(submission_time) > 0:
                 submission_time.append(submit_time-1e-6)
                 ces.append(ces[-1])
             submission_time.append(submit_time)
             ces.append(ce)
+    if ces[-1] != 0:
+        ces.append(0)
+        submission_time.append(submission_time[-1])
     submission_time = [(t - submission_time[0]) / 3600 for t in submission_time]
     if debug:
         for i,submit_time in enumerate(submission_time):

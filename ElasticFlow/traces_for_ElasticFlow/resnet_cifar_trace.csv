@@ -1,0 +1,6 @@
+job_id,submit_time,iteration,model_name,ddl,batch_size,num_gpu,duration,best_effort
+0,0,77215,resnet50_cifar10,4426,256,1,3930,0
+1,2811,94898,resnet50_cifar10,9179,256,1,4830,0
+2,5469,19852,resnet50_cifar10,6228,128,1,752,0
+3,309537,17316,resnet50_cifar10,409537,64,1,10823,0
+4,5602,38524,resnet50_cifar10,6988,64,1,1347,0

@@ -136,26 +136,28 @@ class SpeechRecognitionModel(nn.Module):
 
 def model_list():
     resnet_model = torchvision.models.resnet50()
+    resnet_cifar10_model = torchvision.models.resnet50()
+    resnet_cifar10_model.fc = nn.Linear(resnet_cifar10_model.fc.in_features, 10)
     vgg_model = torchvision.models.vgg16()
     inception_model = torchvision.models.inception_v3(init_weights=False, aux_logits=False)
-    #model_config = GPT2Config.from_pretrained(pretrained_model_name_or_path='gpt2', num_labels=2)
-    model_config = GPT2Config.from_pretrained(pretrained_model_name_or_path='/mnt/data1/gpt2/', num_labels=2)
-    gpt2_model = GPT2ForSequenceClassification.from_pretrained(pretrained_model_name_or_path='/mnt/data1/gpt2/', config=model_config)
-    #gpt2_model = GPT2ForSequenceClassification.from_pretrained(pretrained_model_name_or_path='gpt2', config=model_config)
+    model_config = GPT2Config.from_pretrained(pretrained_model_name_or_path='gpt2', num_labels=2)
+    #model_config = GPT2Config.from_pretrained(pretrained_model_name_or_path='/mnt/data1/gpt2/', num_labels=2)
+    #gpt2_model = GPT2ForSequenceClassification.from_pretrained(pretrained_model_name_or_path='/mnt/data1/gpt2/', config=model_config)
+    gpt2_model = GPT2ForSequenceClassification.from_pretrained(pretrained_model_name_or_path='gpt2', config=model_config)
     # resize model embedding to match new tokenizer
-    tokenizer = GPT2Tokenizer(vocab_file='/mnt/data1/gpt2/vocab.json', merges_file='/mnt/data1/gpt2/merges.txt')
-    #tokenizer = GPT2Tokenizer.from_pretrained(pretrained_model_name_or_path='gpt2')
+    #tokenizer = GPT2Tokenizer(vocab_file='/mnt/data1/gpt2/vocab.json', merges_file='/mnt/data1/gpt2/merges.txt')
+    tokenizer = GPT2Tokenizer.from_pretrained(pretrained_model_name_or_path='gpt2')
     gpt2_model.resize_token_embeddings(len(tokenizer))
     # fix model padding token id
     gpt2_model.config.pad_token_id = gpt2_model.config.eos_token_id
-    #bert_model = BertForSequenceClassification.from_pretrained(
-    #    "bert-large-uncased", # Use the 12-layer BERT model, with an uncased vocab.
-    #    num_labels = 2, # The number of output labels--2 for binary classification.
-    #                    # You can increase this for multi-class tasks.   
-    #    output_attentions = False, # Whether the model returns attentions weights.
-    #    output_hidden_states = False, # Whether the model returns all hidden-states.
-    #)
-    bert_model = BertForSequenceClassification.from_pretrained("/mnt/data1/bert")
+    bert_model = BertForSequenceClassification.from_pretrained(
+        "bert-large-uncased", # Use the 12-layer BERT model, with an uncased vocab.
+        num_labels = 2, # The number of output labels--2 for binary classification.
+                        # You can increase this for multi-class tasks.   
+        output_attentions = False, # Whether the model returns attentions weights.
+        output_hidden_states = False, # Whether the model returns all hidden-states.
+    )
+    #bert_model = BertForSequenceClassification.from_pretrained("/mnt/data1/bert")
     hparams = {
         "n_cnn_layers": 3,
         "n_rnn_layers": 5,
@@ -173,6 +175,7 @@ def model_list():
 
     model_list = {
         "resnet50" : resnet_model,
+        "resnet50_cifar10": resnet_cifar10_model,
         "vgg16" : vgg_model,
         "inception3" : inception_model,
         "gpt2" : gpt2_model,

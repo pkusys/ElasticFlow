@@ -21,6 +21,7 @@ from inceptionv3.inceptionv3_ddp import InceptionV3Workload
 from GPT2.gpt2_ddp import GPT2Workload
 from bert.bert_ddp import BertWorkload
 from deepspeech2.deepspeech2_ddp import DeepSpeechWorkload
+from resnet_cifar10.resnet_cifar10 import ResNetCifar10Workload
 from torch.multiprocessing import Process
 import torch
 
@@ -106,6 +107,7 @@ class Trainer():
             "gpt2" : GPT2Workload,
             "bert" : BertWorkload,
             "deepspeech2" : DeepSpeechWorkload,
+            "resnet50_cifar10" : ResNetCifar10Workload,
         }
         self.model_list = utils.model_list()
 
@@ -130,8 +132,7 @@ class Trainer():
         os.environ['MASTER_PORT'] = str(self.pg_master_port)
         dist.init_process_group(backend="nccl", world_size=self.pg_world_size, rank=self.global_rank)
         assert dist.get_world_size() == self.pg_world_size
-        print("$$$ world_size", self.pg_world_size, self.pg_master_ip, str(self.pg_master_port))
-
+        
         self._server_thread = threading.Thread(
             target=trainer_server.serve,
             args=(trainer_id, trainer_port, callbacks)
