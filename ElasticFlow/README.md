@@ -217,7 +217,19 @@ Currently, the ElasticFlow prototype only supports reading submitted jobs from j
 
 Three terminal windows are needed to run ElasticFlow: one for the scheduler, one for the master, and one for the workers.
 
-First, run the master with:
+First, you need to setup the environment with:
+```Bash
+git clone https://github.com/gudiandian/ElasticFlow-artifact.git
+cd ElasticFlow-artifact
+cd ElasticFlow
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+python download_cifar10.py # download CIFAR10 dataset
+cd scheduler
+make
+```
+
+After configuring the environment, run the master with:
 ```Bash
 python master.py -p 6888 -n 1
 ```
