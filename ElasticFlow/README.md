@@ -202,12 +202,25 @@ For plotting figures, please refer to `<repo>/plot_figure/README.md`
 
 ### Environment
 
-If you have A100 GPU on your server, you can simply configure the enviromnentwith `prepare_container.sh` and run the scheduler inside the container. Otherwise, you need to have PyTorch in your environment and install the dependencies:
+If you have A100 GPU on your server, you can simply configure the enviromnent with
+```Bash
+git clone https://github.com/gudiandian/ElasticFlow-artifact.git
+cd ElasticFlow-artifact/ElasticFlow
+bash prepare_container.sh
+```
+Then, you can run ElasticFlow inside the container.
+
+On a server with the contained already configured, please simply run `sudo docker exec -it ddl bash` and then run the commands inside the container
+
+If you do not have A100 GPU on your server, you need to have PyTorch in your environment and install the dependencies:
 
 ```Bash
+git clone https://github.com/gudiandian/ElasticFlow-artifact.git
+cd ElasticFlow-artifact/ElasticFlow
 python -m pip install --upgrade pip
 pip install -r requirements.txt
-cd <repo>/ElasticFlow/scheduler
+python download_cifar10.py
+cd scheduler
 make
 ```
 
@@ -215,19 +228,22 @@ Currently, the ElasticFlow prototype only supports reading submitted jobs from j
 
 ### Steps
 
-Three terminal windows are needed to run ElasticFlow: one for the scheduler, one for the master, and one for the workers.
+1. Trace preparation
 
-First, you need to setup the environment with:
+I have placed a 10-job trace in `/home/azuser/10job_trace.csv`. 
+
+If you wish to run ElasticFlow inside a container, please copy this trace file to the container with:
 ```Bash
-git clone https://github.com/gudiandian/ElasticFlow-artifact.git
-cd ElasticFlow-artifact
-cd ElasticFlow
-python -m pip install --upgrade pip
-pip install -r requirements.txt
-python download_cifar10.py # download CIFAR10 dataset
-cd scheduler
-make
+sudo docker cp /home/azuser/10job_trace.csv <contianer_id>:/workspace/ElasticFlow-artifact/ElasticFlow/traces_for_ElasticFlow/
 ```
+
+If you are not using a container, please copy the trace file to `<repo>/ElasticFlow/traces_for_ElasticFlow/`.
+
+2. Run ElasticFlow
+
+To get the container ID, please run `sudo docker ps` and you will get a list of all of the running containers.
+
+Three terminal windows are needed to run ElasticFlow: one for the scheduler, one for the master, and one for the workers.
 
 After configuring the environment, run the master with:
 ```Bash
@@ -240,7 +256,7 @@ python worker.py -i 127.0.0.1 -P 6888 -p 9000 -n <number_of_GPU> -A 127.0.0.1 -g
 ```
 Then, wait for a few seconds, if you see messages such as `trainer 0 idles ... ...`, it means the trainer processes have been successfully started. Then, you can start the scheduler on the master node:
 ```Bash
-python scheduler.py --cluster_spec=cluster_specs/n1g<number_of_GPU>.csv --print --scheme=elastic --trace_file=../traces_for_ElasticFlow/resnet_cifar_trace.csv  --schedule=ef-accessctrl --log_path=test --simulation=False --scheduling_slot=240 --restart_threshold=70
+python scheduler.py --cluster_spec=cluster_specs/n1g<number_of_GPU>.csv --print --scheme=elastic --trace_file=../traces_for_ElasticFlow/10job_trace.csv  --schedule=ef-accessctrl --log_path=test --simulation=False --scheduling_slot=240 --restart_threshold=70
 ```
 
 We follow previous work to speed up the experiments by fast-forwarding. On each scheduling event, we only train each job for a few iterations, and then skips a few iterations to move to the next scheduling event. 
