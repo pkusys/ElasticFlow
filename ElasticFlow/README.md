@@ -202,7 +202,7 @@ For plotting figures, please refer to `<repo>/plot_figure/README.md`
 
 ### Environment
 
-If you have A100 GPU on your server, you can simply configure the enviromnent with
+If you have A100 GPU on your server, you can simply configure the enviromnent with:
 ```Bash
 git clone https://github.com/gudiandian/ElasticFlow-artifact.git
 cd ElasticFlow-artifact/ElasticFlow
@@ -210,7 +210,7 @@ bash prepare_container.sh
 ```
 Then, you can run ElasticFlow inside the container.
 
-On a server with the contained already configured, please simply run `sudo docker exec -it ddl bash` and then run the commands inside the container
+On a server with the container already configured, please simply run `sudo docker exec -it ddl bash` and then run the commands inside the container.
 
 If you do not have A100 GPU on your server, you need to have PyTorch in your environment and install the dependencies:
 
@@ -236,16 +236,21 @@ If you wish to run ElasticFlow inside a container, please copy this trace file t
 ```Bash
 sudo docker cp /home/azuser/10job_trace.csv <contianer_id>:/workspace/ElasticFlow-artifact/ElasticFlow/traces_for_ElasticFlow/
 ```
+To get the container ID, please run `sudo docker ps` and you will get a list of all of the running containers.
 
 If you are not using a container, please copy the trace file to `<repo>/ElasticFlow/traces_for_ElasticFlow/`.
 
+
 2. Run ElasticFlow
 
-To get the container ID, please run `sudo docker ps` and you will get a list of all of the running containers.
+Three terminal windows are needed to run ElasticFlow: one for the scheduler, one for the master, and one for the workers. If you have already run `bash prepare_container.sh`, then you need to open two more terminal windows and run `sudo docker exec -it ddl bash`. Then, you will have three prepared terminal wondows.
 
-Three terminal windows are needed to run ElasticFlow: one for the scheduler, one for the master, and one for the workers.
+First, enter the directory where the scheduler is:
+```Bash
+cd ElasticFlow-artifact/ElasticFlow/scheduler
+```
 
-After configuring the environment, run the master with:
+Run the master with:
 ```Bash
 python master.py -p 6888 -n 1
 ```
