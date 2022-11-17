@@ -200,9 +200,11 @@ For plotting figures, please refer to `<repo>/plot_figure/README.md`
 
 ## Functionality Test on a single GPU server
 
+Next we provide the steps to test the functionality of ElsticFlow ona single server with 8 A100 GPUs.
+
 ### Environment
 
-If you have A100 GPU on your server, you can simply configure the enviromnent with:
+Please configure the enviromnent with:
 ```Bash
 git clone https://github.com/gudiandian/ElasticFlow-artifact.git
 cd ElasticFlow-artifact/ElasticFlow
@@ -212,63 +214,79 @@ Then, you can run ElasticFlow inside the container.
 
 On a server with the container already configured, please simply run `sudo docker exec -it ddl bash` and then run the commands inside the container.
 
-If you do not have A100 GPU on your server, you need to have PyTorch in your environment and install the dependencies:
-
-```Bash
-git clone https://github.com/gudiandian/ElasticFlow-artifact.git
-cd ElasticFlow-artifact/ElasticFlow
-python -m pip install --upgrade pip
-pip install -r requirements.txt
-python download_cifar10.py
-cd scheduler
-make
-```
-
-Currently, the ElasticFlow prototype only supports reading submitted jobs from job trace files. We provide a 5-job trace in `../traces_for_ElasticFlow/resnet_cifar_trace.csv`. All of the jobs train the ResNet50 model with CIFAR10 dataset. Please prepare the CIFAR10 dataset in `<repo>/ElasticFlow/elastic-training-executor/`。
+Currently, the ElasticFlow prototype only supports reading submitted jobs from job trace files. We provide a 10-job trace in `../traces_for_ElasticFlow/10job_trace.csv`. All of the jobs train the ResNet50 model with CIFAR10 dataset. Please prepare the CIFAR10 dataset in `<repo>/ElasticFlow/elastic-training-executor/`。
 
 ### Steps
 
-1. Trace preparation
-
-I have placed a 10-job trace in `/home/azuser/10job_trace.csv`. 
-
-If you wish to run ElasticFlow inside a container, please copy this trace file to the container with:
-```Bash
-sudo docker cp /home/azuser/10job_trace.csv <contianer_id>:/workspace/ElasticFlow-artifact/ElasticFlow/traces_for_ElasticFlow/
-```
-To get the container ID, please run `sudo docker ps` and you will get a list of all of the running containers.
-
-If you are not using a container, please copy the trace file to `<repo>/ElasticFlow/traces_for_ElasticFlow/`.
-
-
-2. Run ElasticFlow
-
 Three terminal windows are needed to run ElasticFlow: one for the scheduler, one for the master, and one for the workers. If you have already run `bash prepare_container.sh`, then you need to open two more terminal windows and run `sudo docker exec -it ddl bash`. Then, you will have three prepared terminal wondows.
 
-First, enter the directory where the scheduler is:
+Please enter the directory where the scheduler is:
 ```Bash
 cd ElasticFlow-artifact/ElasticFlow/scheduler
 ```
 
-Run the master with:
-```Bash
-python master.py -p 6888 -n 1
-```
+1. To start the master, run `python master.py -p 6888 -n 1`.
 
-Then, run the worker with:
+2. To start the workers, run
 ```Bash
-python worker.py -i 127.0.0.1 -P 6888 -p 9000 -n <number_of_GPU> -A 127.0.0.1 -g 6889 -w <number_of_GPU> -r ../elastic-training-executor/ -x </path/to/python3> --dynamic_requests=True --scheduler_port=6890 --scheduler_addr=127.0.0.1
+python worker.py -i 127.0.0.1 -P 6888 -p 9000 -n 8 -A 127.0.0.1 -g 6889 -w 8 -r ../elastic-training-executor/ -x </path/to/python3> --dynamic_requests=True --scheduler_port=6890 --scheduler_addr=127.0.0.1
 ```
-Then, wait for a few seconds, if you see messages such as `trainer 0 idles ... ...`, it means the trainer processes have been successfully started. Then, you can start the scheduler on the master node:
+3. Please wait for a few seconds, if you see messages such as `trainer 0 idles ... ...`, it means the trainer processes have been successfully started. Then, you can start the scheduler on the master node.
+
+a. ElasticFlow
+
 ```Bash
-python scheduler.py --cluster_spec=cluster_specs/n1g<number_of_GPU>.csv --print --scheme=elastic --trace_file=../traces_for_ElasticFlow/10job_trace.csv  --schedule=ef-accessctrl --log_path=test --simulation=False --scheduling_slot=240 --restart_threshold=70
+python scheduler.py --cluster_spec=cluster_specs/n1g8.csv --print --scheme=elastic --trace_file=../traces_for_ElasticFlow/10job_trace.csv  --schedule=ef-accessctrl --log_path=test --simulation=False --scheduling_slot=240 --restart_threshold=70
+```
+output:
+```
+accepted jobs: 6
+declined jobs: 4
+```
+b. EDF
+
+```Bash
+python scheduler.py --cluster_spec=cluster_specs/n1g8.csv --print --scheme=elastic --trace_file=../traces_for_ElasticFlow/10job_trace.csv  --schedule=edf  --log_path=test --simulation=False --scheduling_slot=240 --restart_threshold=70
+```
+output:
+
+```
+accepted jobs: 1
+declined jobs: 9
+```
+c. Gandiva
+
+```Bash
+python scheduler.py --cluster_spec=cluster_specs/n1g8.csv --print --scheme=gandiva  --trace_file=../traces_for_ElasticFlow/10job_trace.csv  --schedule=gandiva   --log_path=test --simulation=False --scheduling_slot=240 --restart_threshold=70
+```
+output:
+
+```
+accepted jobs: 5
+declined jobs: 5
+```
+d. Tiresias
+
+```Bash
+python scheduler.py --cluster_spec=cluster_specs/n1g8.csv --print --scheme=elastic   --trace_file=../traces_for_ElasticFlow/10job_trace.csv  --schedule=dlas-gpu   --log_path=test --simulation=False --scheduling_slot=240 --restart_threshold=70
+```
+output:
+
+```
+accepted jobs: 2
+declined jobs: 8
+```
+e. Themis
+
+```Bash
+python scheduler.py --cluster_spec=cluster_specs/n1g8.csv --print --scheme=elastic    --trace_file=../traces_for_ElasticFlow/10job_trace.csv  --schedule=themis   --log_path=test --simulation=False --scheduling_slot=240 --restart_threshold=70
+```
+output:
+
+```
+accepted jobs: 3
+declined jobs: 7
 ```
 
 We follow previous work to speed up the experiments by fast-forwarding. On each scheduling event, we only train each job for a few iterations, and then skips a few iterations to move to the next scheduling event. 
-
-The results can be printed by `scheduler.py` like this:
-```
-accepted jobs: <a number>
-declined jobs: <a number>
-```
 
