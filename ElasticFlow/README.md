@@ -111,7 +111,7 @@ Then, run the experiments in container.
 
 On the master node, run the master server:
 ```Bash
-python python master.py -p 6888 -n 4
+python master.py -p 6888 -n 4
 ```
 On each of four worker nodes (the master node can be included in the worker nodes), run the worker:
 ```Bash
@@ -192,6 +192,8 @@ On each of two worker nodes (the master node can be included in the worker nodes
 python worker.py -i <master_ip> -P 6888 -p 9000 -n 8 -A <master_ip> -g 6889 -w 16 -r ../elastic-training-executor/ -x /opt/conda/bin/python3.8 
 ```
 The time for running the whole trace is the scaling/migration overhead for each case.
+
+Note that some python processes might not be successfully killed after each run. Please run `pkill -9 python` every time before you start the experiments.
 
 
 ### Plotting figures
@@ -289,4 +291,6 @@ declined jobs: 7
 ```
 
 We follow previous work to speed up the experiments by fast-forwarding. On each scheduling event, we only train each job for a few iterations, and then skips a few iterations to move to the next scheduling event. 
+
+Note that some python processes might not be successfully killed after each run. Please run `pkill -9 python` every time before you start the experiments.
 
