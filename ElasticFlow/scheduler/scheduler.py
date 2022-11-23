@@ -2964,13 +2964,14 @@ def dlas_sim_jobs(gputime=False, solve_starvation=0):
                         rjob['overhead'] = utils.estimate_overhead(rjob['num_gpu'], restart)
                         remaining_time += rjob['overhead']
                 end_time = int(event_time + remaining_time)
-                if end_time < min_end_time:
-                    tmp_end_event['time'] = end_time
+                end_event_time = max(event_time + FLAGS.scheduling_slot, end_time)
+                if end_event_time < min_end_time:
+                    tmp_end_event['time'] = end_event_time
                     tmp_end_event['end_jobs'] = list()
                     tmp_end_event['end_jobs'].append(rjob)
-                    min_end_time = end_time
+                    min_end_time = end_event_time
                     rjob['end_time'] = end_time
-                elif min_end_time == end_time:
+                elif min_end_time == end_event_time:
                     rjob['end_time'] = end_time
                     tmp_end_event['end_jobs'].append(rjob)
         if min_end_time < sys.maxsize:
