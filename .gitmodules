@@ -1,0 +1,3 @@
+[submodule "elasticflow-traces"]
+	path = elasticflow-traces
+	url = https://github.com/microsoft/elasticflow-traces

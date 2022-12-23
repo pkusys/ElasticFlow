@@ -193,7 +193,11 @@ class _TFJobs(object):
         if 'duration' in job_dict:
             # job_dict['duration'] = int(float(job_dict['duration']))
             job_dict['duration'] = int(job_dict['duration'])
-        job_dict['iter_left'] = job_dict['iteration']
+        if 'iteration' in job_dict:
+            job_dict['iter_left'] = job_dict['iteration']
+        elif 'num_iteration' in job_dict:
+            job_dict['iteration'] = job_dict['num_iteration']
+            job_dict['iter_left'] = job_dict['num_iteration']
 
         job_dict['rank'] = sys.maxsize
         job_dict['overhead'] = 0
@@ -206,9 +210,14 @@ class _TFJobs(object):
         if 'pending_time' not in job_dict:
             job_dict['pending_time'] = 0
 
+        if 'submission_time' in job_dict:
+            job_dict['submit_time'] = job_dict['submission_time']
+
         if 'submit_time' in job_dict:
             #job_dict['submit_time'] += 10 * 60
             job_dict['r_submit_time'] = int(-1 * job_dict['submit_time'])
+        if 'deadline' in job_dict:
+            job_dict['ddl'] = job_dict['deadline']
 
         job_dict['start_time'] = sys.maxsize
         job_dict['end_time'] = 0

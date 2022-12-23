@@ -37,9 +37,13 @@ Note that the Chronus baseline relies on the Gurobi optimizer. Please refer to t
 ### Reproduction Steps
 
 0. Trace preparation.
+We collected the [job traces](https://github.com/microsoft/elasticflow-traces) from 10 Microsoft internal ITP clusters.
 
-The job traces are not public for now due to policy reasons. We are trying our best to make the trace files public as soon as possible. To get the traces, you need to sign an NDA (non-disclosure agreement) with our company. Please send us your name, affiliation, and address so that we can sign NDA with you and send you the job traces privately.
-The descriptions of the job traces are in `private_data.md`.
+```Bash
+git submodule init
+git submodule update
+tar -xvzf elasticflow-traces/data/elasticflow-traces.tar.gz -C ElasticFlow/traces_for_ElasticFlow/
+```
 
 1. Run the experiments.
 ```Bash

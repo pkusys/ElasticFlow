@@ -2,7 +2,7 @@
 # Figure 8(a)
 schedule=("edf" "gandiva" "dlas-gpu" "themis" "ef-accessctrl" )
 #placement=("elastic" "gandiva" "elastic" "elastic" "elastic")
-jobs=("cluster_1" "cluster_2" "cluster_3" "cluster_4" "cluster_5" "cluster_6" "cluster_7" "cluster_8" "cluster_9" "cluster_10" "philly_103959")
+jobs=("cluster01" "cluster02" "cluster03" "cluster04" "cluster05" "cluster06" "cluster07" "cluster08" "cluster09" "cluster10" "philly_103959")
 
 echo "running..."
 
