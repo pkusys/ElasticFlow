@@ -837,7 +837,7 @@ def edf_sim_allocation(job_dict, start_time, simulation=True, future_free_gpus=N
                     new_future_free_gpus[event_time] = last_event_gpu - new_allocations[event_time]
                 assert new_future_free_gpus[event_time] >= 0
 
-        elif available_gpu > 0 and base_quota > 0:
+        elif available_gpu >= job_dict["min_gpu"] and base_quota > 0:
 
             for throughput in THROUGHPUTS[job_dict['model']['name']][global_batch_size]:
                 gpu_num = int(throughput)
@@ -884,7 +884,7 @@ def edf_sim_allocation(job_dict, start_time, simulation=True, future_free_gpus=N
             iter_left -= iterations
             new_future_free_gpus[event_time] -= new_allocations[event_time]
             assert new_future_free_gpus[event_time] >= 0
-        elif available_gpu == 0:
+        elif available_gpu < < job_dict["min_gpu"]:
             new_allocations[event_time] = 0
         available_gpu = new_future_free_gpus[future_event_time]
         event_time = future_event_time
