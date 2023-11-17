@@ -426,6 +426,7 @@ def ef_sim_allocation(job_dict, start_time, assign_gpu=False, assigned_gpus=-1, 
                     job_dict['allocations'], job_dict['end_time'])) / (job_dict['next_level_gpu'] - job_dict['num_gpu'])
                 job_dict['next_level_future_gpus'] = utils.merge_dict(new_future_free_gpus)
                 job_dict['next_level_endtime'] = estimated_end_time
+                job_dict['next_level_realendtime'] = estimated_real_end_time
             else:
                 if assign_gpu:
                     job_dict['old_end_time'] = job_dict['end_time']
@@ -578,6 +579,7 @@ def ef_sim_allocation(job_dict, start_time, assign_gpu=False, assigned_gpus=-1, 
                         job_dict['allocations'], job_dict['end_time'])) / (job_dict['next_level_gpu'] - job_dict['num_gpu'])
                     job_dict['next_level_future_gpus'] = utils.merge_dict(new_future_free_gpus)
                     job_dict['next_level_endtime'] = estimated_end_time
+                    job_dict['next_level_realendtime'] = estimated_real_end_time
                 else:
                     if assign_gpu:
                         job_dict['old_end_time'] = job_dict['end_time']
@@ -696,6 +698,7 @@ def ef_sim_allocation(job_dict, start_time, assign_gpu=False, assigned_gpus=-1, 
                     job_dict['allocations'], job_dict['end_time'])) / (job_dict['next_level_gpu'] - job_dict['num_gpu'])
                 job_dict['next_level_future_gpus'] = utils.merge_dict(new_future_free_gpus)
                 job_dict['next_level_endtime'] = estimated_end_time
+                job_dict['next_level_realendtime'] = estimated_real_end_time
             else:
                 if assign_gpu:
                     job_dict['old_end_time'] = job_dict['end_time']
@@ -747,6 +750,7 @@ def ef_sim_allocation(job_dict, start_time, assign_gpu=False, assigned_gpus=-1, 
                 job_dict['allocations'], job_dict['end_time'])) / gpu_increased
         job_dict['next_level_future_gpus'] = utils.merge_dict(new_future_free_gpus)
         job_dict['next_level_endtime'] = estimated_end_time
+        job_dict['next_level_realendtime'] = estimated_real_end_time
     else:
         if assign_gpu:
             job_dict['old_end_time'] = job_dict['end_time']
@@ -1015,6 +1019,8 @@ def allocate_free_gpus(cur_time):
             eachjob['num_gpu'] = eachjob['next_level_gpu']
             eachjob['old_end_time'] = eachjob['end_time']
             eachjob['end_time'] = eachjob['next_level_endtime']
+            eachjob['real_end_time'] = eachjob['next_level_realendtime']
+            if eachjob in JOBS.pending_jobs:
             if eachjob in JOBS.pending_jobs:
                 JOBS.remove_from_pending(eachjob, cur_time)
             JOBS.change_job_end_event(eachjob)
