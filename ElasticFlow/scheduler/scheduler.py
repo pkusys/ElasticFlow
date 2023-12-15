@@ -1021,7 +1021,6 @@ def allocate_free_gpus(cur_time):
             eachjob['end_time'] = eachjob['next_level_endtime']
             eachjob['real_end_time'] = eachjob['next_level_realendtime']
             if eachjob in JOBS.pending_jobs:
-            if eachjob in JOBS.pending_jobs:
                 JOBS.remove_from_pending(eachjob, cur_time)
             JOBS.change_job_end_event(eachjob)
             del eachjob['next_level_endtime'], eachjob['next_level_gpu'], eachjob['next_level_allocation']
@@ -3220,3 +3219,4 @@ if __name__ == '__main__':
         server_thread.setDaemon(True)
         server_thread.start()
     main()
+  
