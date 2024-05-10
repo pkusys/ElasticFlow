@@ -7,12 +7,12 @@ jobs=("cluster01" "cluster02" "cluster03" "cluster04" "cluster05" "cluster06" "c
 echo "running..."
 
 for job in ${jobs[@]};do
-    if [ $job = "cluster_1" ] || [ $job = "cluster_2" ] || [ $job = "cluster_3" ] || [ $job = "cluster_5" ] || [ $job = "cluster_6" ]; then
-        setup="n8g8"
-    elif [ $job = "cluster_4" ] || [ $job = "cluster_7" ] || [ $job = "cluster_8" ] || [ $job = "cluster_9" ]; then
-        setup="n16g8"
+    if [ $job = "cluster01" ] || [ $job = "cluster02" ] || [ $job = "cluster03" ] || [ $job = "cluster05" ] || [ $job = "cluster06" ]; then
+        setup="n64g8"
+    elif [ $job = "cluster04" ] || [ $job = "cluster07" ] || [ $job = "cluster08" ] || [ $job = "cluster09" ]; then
+        setup="n128g8"
     else
-        setup="n4g8"
+        setup="n32g8"
     fi
     cluster_spec="cluster_specs/${setup}.csv"
     job_file="../traces_for_ElasticFlow/${job}.csv"
@@ -33,12 +33,12 @@ done
 
 cd ../chronus-scheduler/utils
 for job in ${jobs[@]};do
-    if [ $job = "cluster_1" ] || [ $job = "cluster_2" ] || [ $job = "cluster_3" ] || [ $job = "cluster_5" ] || [ $job = "cluster_6" ]; then
-        num_node=8
-    elif [ $job = "cluster_4" ] || [ $job = "cluster_7" ] || [ $job = "cluster_8" ] || [ $job = "cluster_9" ]; then
-        num_node=16
+    if [ $job = "cluster01" ] || [ $job = "cluster02" ] || [ $job = "cluster03" ] || [ $job = "cluster05" ] || [ $job = "cluster06" ]; then
+        num_node=64
+    elif [ $job = "cluster04" ] || [ $job = "cluster07" ] || [ $job = "cluster08" ] || [ $job = "cluster09" ]; then
+        num_node=128
     else
-        num_node=4
+        num_node=32
     fi
     # get trace and namelist
     job_file="../../traces_for_ElasticFlow/${job}.csv"
